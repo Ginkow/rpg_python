@@ -59,3 +59,19 @@ class Weapon(Item):
 gun = Weapon("Pistolet", 40, "Épique")
 harpoon = Weapon("Harpon", 25, "Commune")
 arc = Weapon("Arc", 15, "Commune",extra_effect=25)  # Récupère 25 HP lors de l'utilisation
+
+# Dictionnaire pour retrouver les objets par nom
+item_classes = {
+    "Potion de vie min": pv_min,
+    "Potion de vie moyenne": pv_mid,
+    "Potion de vie max": pv_max,
+    "Potion de boost de dégâts min": deg_min,
+    "Potion de boost de dégâts moyenne": deg_mid,
+    "Potion de boost de dégâts max": deg_max,
+    "Pistolet": gun,
+    "Harpon": harpoon,
+    "Arc": arc
+}
+
+def get_item_by_name(name):
+    return item_classes.get(name)

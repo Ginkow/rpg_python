@@ -1,10 +1,7 @@
 import random
-import os  # Importer le module os pour vider le terminal
-import player
+import os
 import ennemy
-import inventory
 import save
-import startgameload
 from datetime import datetime
 
 # Positions fixes pour le boss et les objets
@@ -13,11 +10,6 @@ TREASURE_POSITION = (2, 3)
 GOBELIN_POSITION = (4, 2)
 ORC_POSITION = (3, 4)
 
-
-def clear_terminal():
-    # Vider le terminal en fonction du système d'exploitation
-    os.system('cls' if os.name == 'nt' else 'clear')
-    
 def generate_save_name(base_name="game_save", directory='save/', extension='.json'):
     """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles, en évitant les doublons."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # Format: YYYYMMDD_HHMMSS
@@ -30,57 +22,29 @@ def generate_save_name(base_name="game_save", directory='save/', extension='.jso
         i += 1
     
     return os.path.join(directory, save_name)  # Retourne le chemin complet
-    
-def start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies):
+
+
+def clear_terminal():
+    # Vider le terminal en fonction du système d'exploitation
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def start_loaded_game(loaded_player, enemies, current_position, treasures_found, defeated_enemies):
     """Démarre une partie avec les données chargées."""
-    print(f"Démarrage de la partie avec {player.name} à la position {current_position}.")
-    
-    # Logique pour gérer le déroulement de la partie
-    while player.is_alive() and enemies:  # Boucle principale du jeu
-        # Ici, vous pouvez ajouter la logique du jeu, comme le mouvement, les combats, etc.
-        print(f"Vous êtes à la position {current_position}.")
-        startgameload.start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies)
+    print(f"Démarrage de la partie avec {loaded_player.name} à la position {current_position}.")
 
-def start_game():
-    clear_terminal()  # Vider le terminal au début du jeu
-    print("Bienvenue dans le jeu !")
-    
-    name = input("Entrez votre nom pour commencer le jeu: ")
-    # Initialisation du joueur
-    joueur = player.Player(name, 10, 20, 20, 20, 10, [], "épée", 100, 200)
+    # Mettre à jour la position du joueur
+    loaded_player.position = current_position  # Définir la position du joueur à celle chargée
 
-    # Initialisation des ennemis
-    enemies = [
-        ennemy.Enemy("Gobelin", 10, 5, 2, GOBELIN_POSITION),
-        ennemy.Enemy("Orc", 20, 8, 3, ORC_POSITION)
-    ]
-    boss = ennemy.Enemy("Dragon", 50, 15, 10, BOSS_POSITION)
-    
-    print(f"Bienvenue, {joueur.name}!")
-    print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
-    
-    treasures_found = 0
-    current_position = (0, 0)  # Position initiale
     total_treasures = 1
-    defeated_enemies = []  # Liste pour les ennemis vaincus
 
-    # Ajout d'objets dans le monde du jeu
-    health_potion = inventory.HealthPotion("Potion de vie moyenne", 50, "Épique")
-    damage_boost = inventory.DamageBoostPotion("Potion de boost de dégâts max", 75, 1, "Légendaire")
-    arc_weapon = inventory.Weapon("Arc", 15, "Légendaire", extra_effect=25)  # Dégâts + récupération de 25 HP
+    # Logique pour gérer le déroulement de la partie
+    while loaded_player.is_alive() and enemies:  # Boucle principale du jeu
+        clear_terminal()  # Vider le terminal au début de chaque boucle
+        print(f"Vous êtes à la position {loaded_player.position}. Trésors trouvés : {treasures_found}, Vies restantes : {loaded_player.health}")
 
-    # Ramasser des objets au cours de l'aventure
-    joueur.pickup_item(health_potion)
-    joueur.pickup_item(damage_boost)
-    joueur.pickup_item(arc_weapon)
-    
-    while joueur.health > 0:
-        clear_terminal()  # Vider le terminal à chaque itération de la boucle
-        print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}")
-        
         # Afficher l'inventaire du joueur
-        joueur.show_inventory()
-        
+        loaded_player.show_inventory()
+
         # Décrire l'emplacement
         describe_location()
 
@@ -88,34 +52,33 @@ def start_game():
         move = input("Entrez votre mouvement (zqsd ou go east, go west, go north, go south): ")
 
         # Mise à jour de la position avec les bons paramètres
-        new_position = update_position(move, current_position, joueur, enemies, treasures_found, defeated_enemies)
-        if new_position != current_position:  # Si la position a changé
-            current_position = new_position
+        new_position = update_position(move, loaded_player.position, loaded_player, enemies, treasures_found, defeated_enemies)
+        if new_position != loaded_player.position:  # Si la position a changé
+            loaded_player.position = new_position
 
         # Vérification des événements
         for enemy in enemies:
-            if current_position == enemy.position and enemy.is_alive():
+            if loaded_player.position == enemy.position and enemy.is_alive():
                 print(f"Un {enemy.name} vous attaque !")
                 
                 # Le joueur peut utiliser une potion ou une arme avant le combat
                 action = input("Voulez-vous utiliser un objet avant de combattre ? (oui/non) : ")
                 if action.lower() == "oui":
                     item_name = input("Entrez le nom de l'objet à utiliser : ")
-                    joueur.use_item(item_name)
+                    loaded_player.use_item(item_name)
 
                 # Combat entre le joueur et l'ennemi
-                combat(joueur, enemy)
-                if joueur.health <= 0:
+                if not combat(loaded_player, enemy):
                     print("Vous êtes mort. Fin de la partie.")
                     return
 
-        if current_position == TREASURE_POSITION:
+        if loaded_player.position == TREASURE_POSITION:
             print("Vous avez trouvé un trésor !")
             treasures_found += 1
 
-        elif current_position == BOSS_POSITION:
+        elif loaded_player.position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
-            if combat(joueur, boss):
+            if combat(loaded_player, ennemy.Enemy("Dragon", 50, 15, 10, BOSS_POSITION)):
                 print("Vous avez vaincu le boss et gagné le jeu !")
                 break
             else:
@@ -128,9 +91,10 @@ def start_game():
             break
 
         # Vérifier les vies restantes
-        if joueur.health <= 0:
+        if loaded_player.health <= 0:
             print("Game over ! Vous n'avez plus de vies.")
             break
+
 
 def describe_location():
     descriptions = [
@@ -150,8 +114,7 @@ def update_position(move, current_position, player, enemies, treasures_found, de
         if confirm_exit.lower() == "oui":
             save_game = input("Voulez-vous sauvegarder la partie avant de quitter ? (oui/non): ")
             if save_game.lower() == "oui":
-                save_name = generate_save_name()  # Générer le nom de la sauvegarde
-                save.save_game(player, enemies, current_position, treasures_found, defeated_enemies, save_name)  # Passer save_name à la fonction de sauvegarde
+                save.save_game(player, enemies, current_position, treasures_found, defeated_enemies)
                 print("Partie sauvegardée. Au revoir!")
             else:
                 print("Vous quittez sans sauvegarder. Au revoir!")

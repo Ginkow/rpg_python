@@ -35,7 +35,8 @@ def game():
             try:
                 save_index = int(save_choice) - 1
                 if 0 <= save_index < len(saves):
-                    player, enemies, current_position, treasures_found, defeated_enemies = save.load_game(saves[save_index])
+                    player, enemies, current_position, treasures_found, defeated_enemies = save.load_game(f'save/{saves[save_index]}')
+                    startgame.start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies)  # Démarrer la partie chargée
                 else:
                     print("Choix invalide.")
             except ValueError:

@@ -1,35 +1,49 @@
 {
     "player": {
-        "name": "zae",
+        "name": "ginko",
+        "level": 10,
         "health": 20,
+        "max_health": 20,
+        "attack": 20,
+        "defense": 10,
+        "weapon": "\u00e9p\u00e9e",
         "inventory": [
             "Potion de vie moyenne",
             "Potion de boost de d\u00e9g\u00e2ts max",
             "Arc"
         ],
+        "experience": 100,
+        "experience_to_next_level": 200,
         "position": [
-            3,
-            0
+            6,
+            2
         ],
-        "experience": 0
+        "alive": true
     },
     "enemies": [
         {
             "name": "Gobelin",
             "health": 10,
+            "attack": 5,
+            "defense": 2,
             "position": [
                 4,
                 2
-            ]
+            ],
+            "defeated": false
         },
         {
             "name": "Orc",
             "health": 20,
+            "attack": 8,
+            "defense": 3,
             "position": [
                 3,
                 4
-            ]
+            ],
+            "defeated": false
         }
     ],
-    "treasures_found": 0
+    "treasures_found": 0,
+    "defeated_enemies": []
 }

@@ -1,17 +1,23 @@
 class Player:
-    def __init__(self, name, level, health, max_health, attack, defense, inventory, weapon, experience_to_next_level):
+    def __init__(self, name, level, health, max_health, attack, defense, inventory, weapon, experience, experience_to_next_level, position=(0, 0)):
         self.name = name
         self.level = level
         self.health = health
         self.max_health = max_health
-        self.attack = 20  # Attaque normale fixée à 20
+        self.attack = 20
         self.defense = defense
-        self.inventory = []  # L'inventaire est une liste vide au départ
+        self.inventory = []
         self.weapon = weapon
-        self.experience = 0
+        self.experience = experience
         self.experience_to_next_level = experience_to_next_level
-        self.damage_boost = 0  # Augmentation temporaire des dégâts via les potions
-        self.boost_turns = 0  # Nombre de tours restants pour le boost
+        self.damage_boost = 0
+        self.boost_turns = 0
+        self.position = position  # Position du joueur
+    
+    def is_alive(self):
+        """Vérifie si le joueur est encore en vie."""
+        return self.health > 0
+
 
     def attack_target(self, target):
         # Calculer les dégâts en prenant en compte le boost temporaire
