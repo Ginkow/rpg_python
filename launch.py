@@ -8,7 +8,7 @@ def list_saves(directory='save/', extension='.json'):
     return [f for f in os.listdir(directory) if f.endswith(extension)]
 
 def game():
-    while True:  # Boucle pour revenir au menu après chaque action
+    while True:
         print("Menu:")
         print("1. Create New Game")
         print("2. Load Saved Game")
@@ -19,10 +19,10 @@ def game():
         
         if choice == "1":
             print("Create New Game")
-            startgame.start_game()  # Démarrer une nouvelle partie
+            startgame.start_game()
         elif choice == "2":
             print("Load Saved Game")
-            saves = list_saves()  # Liste des sauvegardes
+            saves = list_saves()
             if not saves:
                 print("Aucune sauvegarde trouvée.")
                 continue
@@ -43,12 +43,12 @@ def game():
                 print("Entrée invalide. Veuillez entrer un numéro.")
         elif choice == "3":
             print("About")
-            about.about()  # Afficher des informations sur le jeu (doit être implémenté)
+            about.about()
         elif choice == "4":
             print("Exit")
-            break  # Quitter le jeu
+            break
         else:
             print("Invalid choice!")
 
 if __name__ == "__main__":
-    game()  # Lancer le menu principal
+    game()

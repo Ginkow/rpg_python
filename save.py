@@ -24,8 +24,8 @@ def save_game(player, enemies, position, treasures_found, defeated_enemies, save
             'inventory': [item.name for item in player.inventory],
             'experience': player.experience,
             'experience_to_next_level': player.experience_to_next_level,
-            'position': position,  # Ajout de la position du joueur
-            'alive': player.is_alive()  # Ajout de l'état de vie du joueur
+            'position': position,
+            'alive': player.is_alive()
         },
         'enemies': [
             {
@@ -42,7 +42,7 @@ def save_game(player, enemies, position, treasures_found, defeated_enemies, save
         'defeated_enemies': defeated_enemies
     }
 
-    with open(save_name, 'w') as save_file:  # Utiliser save_name ici
+    with open(save_name, 'w') as save_file: 
         json.dump(game_data, save_file, indent=4)
     print("Partie sauvegardée avec succès.")
 

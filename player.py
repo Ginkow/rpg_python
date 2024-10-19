@@ -24,7 +24,7 @@ class Player:
         total_attack = self.attack + self.damage_boost
         damage = total_attack - target.defense
         if damage < 0:
-            damage = 0  # Éviter les dégâts négatifs
+            damage = 0
         target.health -= damage
         print(f"{self.name} attaque {target.name} et inflige {damage} points de dégâts. {target.name} a {target.health} points de vie restants.")
 
@@ -32,7 +32,7 @@ class Player:
         if self.boost_turns > 0:
             self.boost_turns -= 1
             if self.boost_turns == 0:
-                self.damage_boost = 0  # Réinitialiser le boost après expiration
+                self.damage_boost = 0
                 print(f"Le boost de dégâts de {self.name} a expiré.")
 
     def pickup_item(self, item):
@@ -44,8 +44,8 @@ class Player:
         """Utilise un objet de l'inventaire en fonction du nom."""
         for item in self.inventory:
             if item.name == item_name:
-                item.use(self)  # Utilise l'objet sur le joueur
-                self.inventory.remove(item)  # Retire l'objet après utilisation
+                item.use(self)
+                self.inventory.remove(item)
                 return
         print(f"Objet {item_name} non trouvé dans l'inventaire.")
 

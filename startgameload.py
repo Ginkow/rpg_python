@@ -21,7 +21,7 @@ def generate_save_name(base_name="game_save", directory='save/', extension='.jso
         save_name = f"{base_name}_{timestamp}_{i}{extension}"
         i += 1
     
-    return os.path.join(directory, save_name)  # Retourne le chemin complet
+    return os.path.join(directory, save_name)
 
 
 def clear_terminal():
@@ -38,8 +38,8 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
     total_treasures = 1
 
     # Logique pour gérer le déroulement de la partie
-    while loaded_player.is_alive() and enemies:  # Boucle principale du jeu
-        clear_terminal()  # Vider le terminal au début de chaque boucle
+    while loaded_player.is_alive() and enemies:
+        clear_terminal()
         print(f"Vous êtes à la position {loaded_player.position}. Trésors trouvés : {treasures_found}, Vies restantes : {loaded_player.health}")
 
         # Afficher l'inventaire du joueur
@@ -49,11 +49,11 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
         describe_location()
 
         # Entrer une commande de déplacement (zqsd ou go east, etc.)
-        move = input("Entrez votre mouvement (zqsd ou go east, go west, go north, go south): ")
+        move = input("Entrez votre mouvement (zqsd ou go east, go west, go north, go south) et pour quitter/sauvegarder (exit): ")
 
         # Mise à jour de la position avec les bons paramètres
         new_position = update_position(move, loaded_player.position, loaded_player, enemies, treasures_found, defeated_enemies)
-        if new_position != loaded_player.position:  # Si la position a changé
+        if new_position != loaded_player.position:
             loaded_player.position = new_position
 
         # Vérification des événements
@@ -118,20 +118,20 @@ def update_position(move, current_position, player, enemies, treasures_found, de
                 print("Partie sauvegardée. Au revoir!")
             else:
                 print("Vous quittez sans sauvegarder. Au revoir!")
-            exit()  # Quitter le programme
+            exit()
 
     # Déplacement normal
     if move in ["z", "go north"]:
-        if y < 10:  # Limite supérieure pour y
+        if y < 10:  
             return (x, y + 1)
     elif move in ["s", "go south"]:
-        if y > 0:  # Limite inférieure pour y
+        if y > 0: 
             return (x, y - 1)
     elif move in ["q", "go west"]:
-        if x > 0:  # Limite inférieure pour x
+        if x > 0:
             return (x - 1, y)
     elif move in ["d", "go east"]:
-        if x < 10:  # Limite supérieure pour x
+        if x < 10: 
             return (x + 1, y)
     else:
         print("Mouvement invalide.")
@@ -154,7 +154,8 @@ def combat(player, enemy):
         
         if not enemy.is_alive():
             print(f"{enemy.name} est vaincu !")
-            player.experience += 10  # Récompense d'expérience
+            # Récompense d'expérience
+            player.experience += 10 
             
             # Génération de loot
             loot = enemy.generate_loot()

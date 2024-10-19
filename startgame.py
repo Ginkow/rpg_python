@@ -36,13 +36,12 @@ def start_loaded_game(player, enemies, current_position, treasures_found, defeat
     print(f"Démarrage de la partie avec {player.name} à la position {current_position}.")
     
     # Logique pour gérer le déroulement de la partie
-    while player.is_alive() and enemies:  # Boucle principale du jeu
-        # Ici, vous pouvez ajouter la logique du jeu, comme le mouvement, les combats, etc.
+    while player.is_alive() and enemies:
         print(f"Vous êtes à la position {current_position}.")
         startgameload.start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies)
 
 def start_game():
-    clear_terminal()  # Vider le terminal au début du jeu
+    clear_terminal()
     print("Bienvenue dans le jeu !")
     
     name = input("Entrez votre nom pour commencer le jeu: ")
@@ -60,14 +59,14 @@ def start_game():
     print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
     
     treasures_found = 0
-    current_position = (0, 0)  # Position initiale
+    current_position = (0, 0)
     total_treasures = 1
-    defeated_enemies = []  # Liste pour les ennemis vaincus
+    defeated_enemies = []
 
     # Ajout d'objets dans le monde du jeu
     health_potion = inventory.HealthPotion("Potion de vie moyenne", 50, "Épique")
     damage_boost = inventory.DamageBoostPotion("Potion de boost de dégâts max", 75, 1, "Légendaire")
-    arc_weapon = inventory.Weapon("Arc", 15, "Légendaire", extra_effect=25)  # Dégâts + récupération de 25 HP
+    arc_weapon = inventory.Weapon("Arc", 15, "Légendaire", extra_effect=25)
 
     # Ramasser des objets au cours de l'aventure
     joueur.pickup_item(health_potion)
@@ -75,7 +74,7 @@ def start_game():
     joueur.pickup_item(arc_weapon)
     
     while joueur.health > 0:
-        clear_terminal()  # Vider le terminal à chaque itération de la boucle
+        clear_terminal()
         print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}")
         
         # Afficher l'inventaire du joueur
@@ -85,11 +84,11 @@ def start_game():
         describe_location()
 
         # Entrer une commande de déplacement (zqsd ou go east, etc.)
-        move = input("Entrez votre mouvement (zqsd ou go east, go west, go north, go south): ")
+        move = input("Entrez votre mouvement (zqsd ou go east, go west, go north, go south) et pour quitter/sauvegarder (exit): ")
 
         # Mise à jour de la position avec les bons paramètres
         new_position = update_position(move, current_position, joueur, enemies, treasures_found, defeated_enemies)
-        if new_position != current_position:  # Si la position a changé
+        if new_position != current_position:
             current_position = new_position
 
         # Vérification des événements
@@ -150,8 +149,8 @@ def update_position(move, current_position, player, enemies, treasures_found, de
         if confirm_exit.lower() == "oui":
             save_game = input("Voulez-vous sauvegarder la partie avant de quitter ? (oui/non): ")
             if save_game.lower() == "oui":
-                save_name = generate_save_name()  # Générer le nom de la sauvegarde
-                save.save_game(player, enemies, current_position, treasures_found, defeated_enemies, save_name)  # Passer save_name à la fonction de sauvegarde
+                save_name = generate_save_name()
+                save.save_game(player, enemies, current_position, treasures_found, defeated_enemies, save_name)
                 print("Partie sauvegardée. Au revoir!")
             else:
                 print("Vous quittez sans sauvegarder. Au revoir!")
@@ -159,16 +158,16 @@ def update_position(move, current_position, player, enemies, treasures_found, de
 
     # Déplacement normal
     if move in ["z", "go north"]:
-        if y < 10:  # Limite supérieure pour y
+        if y < 10: 
             return (x, y + 1)
     elif move in ["s", "go south"]:
-        if y > 0:  # Limite inférieure pour y
+        if y > 0:
             return (x, y - 1)
     elif move in ["q", "go west"]:
-        if x > 0:  # Limite inférieure pour x
+        if x > 0:
             return (x - 1, y)
     elif move in ["d", "go east"]:
-        if x < 10:  # Limite supérieure pour x
+        if x < 10: 
             return (x + 1, y)
     else:
         print("Mouvement invalide.")
@@ -191,7 +190,8 @@ def combat(player, enemy):
         
         if not enemy.is_alive():
             print(f"{enemy.name} est vaincu !")
-            player.experience += 10  # Récompense d'expérience
+            # Récompense d'expérience
+            player.experience += 10
             
             # Génération de loot
             loot = enemy.generate_loot()

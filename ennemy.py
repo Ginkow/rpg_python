@@ -32,7 +32,7 @@ class Enemy:
         loot_count = random.randint(1, 3)
         
         for _ in range(loot_count):
-            rarity_roll = random.random()  # Générer un nombre entre 0 et 1
+            rarity_roll = random.random()
             
             # 60% de chance pour un objet commun
             if rarity_roll <= 0.6:

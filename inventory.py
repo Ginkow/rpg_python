@@ -10,7 +10,7 @@ class Item:
 
 class HealthPotion(Item):
     def __init__(self, name, value, rarity):
-        super().__init__(name, "Restaure des points de vie", value, rarity)  # Ajouter rarity ici
+        super().__init__(name, "Restaure des points de vie", value, rarity)
         self.rarity = rarity
 
     def use(self, items):
@@ -26,7 +26,7 @@ pv_max = HealthPotion("Potion de vie max", 100, "Légendaire")
 
 class DamageBoostPotion(Item):
     def __init__(self, name, damage_increase, turns, rarity):
-        super().__init__(name, "Augmente les dégâts", damage_increase, rarity)  # Ajouter rarity ici
+        super().__init__(name, "Augmente les dégâts", damage_increase, rarity)
         self.turns = turns
         self.rarity = rarity
 
@@ -42,7 +42,7 @@ deg_max = DamageBoostPotion("Potion de boost de dégâts max", 75, 1, "Légendai
 
 class Weapon(Item):
     def __init__(self, name, damage, rarity, extra_effect=None):
-        super().__init__(name, "Inflige des dégâts", damage, rarity)  # Ajouter rarity ici
+        super().__init__(name, "Inflige des dégâts", damage, rarity)
         self.extra_effect = extra_effect
 
     def use(self, items, target):
@@ -58,7 +58,7 @@ class Weapon(Item):
 # Liste des armes
 gun = Weapon("Pistolet", 40, "Épique")
 harpoon = Weapon("Harpon", 25, "Commune")
-arc = Weapon("Arc", 15, "Commune",extra_effect=25)  # Récupère 25 HP lors de l'utilisation
+arc = Weapon("Arc", 15, "Commune",extra_effect=25)
 
 # Dictionnaire pour retrouver les objets par nom
 item_classes = {
