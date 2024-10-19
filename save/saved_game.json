@@ -1,0 +1,35 @@
+{
+    "player": {
+        "name": "zae",
+        "health": 20,
+        "inventory": [
+            "Potion de vie moyenne",
+            "Potion de boost de d\u00e9g\u00e2ts max",
+            "Arc"
+        ],
+        "position": [
+            3,
+            0
+        ],
+        "experience": 0
+    },
+    "enemies": [
+        {
+            "name": "Gobelin",
+            "health": 10,
+            "position": [
+                4,
+                2
+            ]
+        },
+        {
+            "name": "Orc",
+            "health": 20,
+            "position": [
+                3,
+                4
+            ]
+        }
+    ],
+    "treasures_found": 0
+}

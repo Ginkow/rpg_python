@@ -3,6 +3,7 @@ import os  # Importer le module os pour vider le terminal
 import player
 import ennemy
 import inventory
+import save
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
@@ -35,6 +36,7 @@ def start_game():
     treasures_found = 0
     current_position = (0, 0)  # Position initiale
     total_treasures = 1
+    defeated_enemies = []  # Liste pour les ennemis vaincus
 
     # Ajout d'objets dans le monde du jeu
     health_potion = inventory.HealthPotion("Potion de vie moyenne", 50, "Épique")
@@ -59,8 +61,8 @@ def start_game():
         # Entrer une commande de déplacement (zqsd ou go east, etc.)
         move = input("Entrez votre mouvement (zqsd ou go east, go west, go north, go south): ")
 
-        # Mise à jour de la position
-        new_position = update_position(move, current_position)
+        # Mise à jour de la position avec les bons paramètres
+        new_position = update_position(move, current_position, joueur, enemies, treasures_found, defeated_enemies)
         if new_position != current_position:  # Si la position a changé
             current_position = new_position
 
@@ -113,8 +115,22 @@ def describe_location():
     ]
     print(random.choice(descriptions))
 
-def update_position(move, current_position):
+def update_position(move, current_position, player, enemies, treasures_found, defeated_enemies):
     x, y = current_position
+    
+    # Si le joueur veut quitter la partie
+    if move == "exit":
+        confirm_exit = input("Voulez-vous quitter la partie ? (oui/non): ")
+        if confirm_exit.lower() == "oui":
+            save_game = input("Voulez-vous sauvegarder la partie avant de quitter ? (oui/non): ")
+            if save_game.lower() == "oui":
+                save.save_game(player, enemies, current_position, treasures_found, defeated_enemies)
+                print("Partie sauvegardée. Au revoir!")
+            else:
+                print("Vous quittez sans sauvegarder. Au revoir!")
+            exit()  # Quitter le programme
+
+    # Déplacement normal
     if move in ["z", "go north"]:
         if y < 10:  # Limite supérieure pour y
             return (x, y + 1)
@@ -129,6 +145,7 @@ def update_position(move, current_position):
             return (x + 1, y)
     else:
         print("Mouvement invalide.")
+    
     return current_position
 
 def combat(player, enemy):

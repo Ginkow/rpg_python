@@ -58,4 +58,4 @@ class Weapon(Item):
 # Liste des armes
 gun = Weapon("Pistolet", 40, "Épique")
 harpoon = Weapon("Harpon", 25, "Commune")
-arc = Weapon("Arc", 15, "Légendaire", extra_effect=25)  # Récupère 25 HP lors de l'utilisation
+arc = Weapon("Arc", 15, "Commune",extra_effect=25)  # Récupère 25 HP lors de l'utilisation
