@@ -22,11 +22,32 @@ class Player:
     def attack_target(self, target):
         # Calculer les dégâts en prenant en compte le boost temporaire
         total_attack = self.attack + self.damage_boost
-        damage = total_attack - target.defense
-        if damage < 0:
-            damage = 0
-        target.health -= damage
-        print(f"{self.name} attaque {target.name} et inflige {damage} points de dégâts. {target.name} a {target.health} points de vie restants.")
+        damage = total_attack
+
+        # Si l'ennemi a du bouclier, les dégâts affectent d'abord le bouclier
+        if target.defense > 0:
+            if damage >= target.defense:
+                # Si les dégâts sont supérieurs ou égaux au bouclier, tout le bouclier est détruit
+                damage_to_health = damage - target.defense  # Calculer les dégâts restants après le bouclier
+                print(f"{self.name} détruit le bouclier de {target.name} ({target.defense} points de défense).")
+                target.defense = 0  # Bouclier épuisé
+                target.health -= damage_to_health  # Dégâts restants affectent la santé
+                print(f"{self.name} inflige {damage_to_health} points de dégâts à {target.name}. {target.name} a {target.health} points de vie restants.\n")
+            else:
+                # Si les dégâts sont inférieurs au bouclier, seule la défense est réduite
+                target.defense -= damage
+                print(f"{self.name} réduit le bouclier de {target.name} de {damage} points. Il reste {target.defense} points de bouclier.\n")
+        else:
+            # Si l'ennemi n'a plus de bouclier, les dégâts affectent directement la santé
+            target.health -= damage
+            print(f"{self.name} attaque {target.name} et inflige {damage} points de dégâts. {target.name} a {target.health} points de vie restants.\n")
+
+        # Diminuer le nombre de tours de boost de dégâts
+        if self.boost_turns > 0:
+            self.boost_turns -= 1
+            if self.boost_turns == 0:
+                self.damage_boost = 0
+                print(f"Le boost de dégâts de {self.name} a expiré.")
 
         # Diminuer le nombre de tours de boost de dégâts
         if self.boost_turns > 0:
@@ -47,7 +68,7 @@ class Player:
                 item.use(self)
                 self.inventory.remove(item)
                 return
-        print(f"Objet {item_name} non trouvé dans l'inventaire.")
+        print(f"Objet {item_name} non trouvé dans l'inventaire.\n")
 
     def show_inventory(self):
         """Affiche tous les objets dans l'inventaire du joueur."""

@@ -46,14 +46,14 @@ def start_game():
     
     name = input("Entrez votre nom pour commencer le jeu: ")
     # Initialisation du joueur
-    joueur = player.Player(name, 10, 20, 20, 20, 10, [], "épée", 100, 200)
+    joueur = player.Player(name, 10, 100, 100, 20, 100, [], "épée", 100, 200)
 
     # Initialisation des ennemis
     enemies = [
-        ennemy.Enemy("Gobelin", 10, 5, 2, GOBELIN_POSITION),
-        ennemy.Enemy("Orc", 20, 8, 3, ORC_POSITION)
+        ennemy.Enemy("Gobelin", 50, 10, 10, GOBELIN_POSITION),
+        ennemy.Enemy("Orc", 75, 15, 25, ORC_POSITION)
     ]
-    boss = ennemy.Enemy("Dragon", 50, 15, 10, BOSS_POSITION)
+    boss = ennemy.Enemy("Dragon", 100, 30, 100, BOSS_POSITION)
     
     print(f"Bienvenue, {joueur.name}!")
     print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
@@ -75,7 +75,7 @@ def start_game():
     
     while joueur.health > 0:
         clear_terminal()
-        print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}")
+        print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}, Boucliers restants: {joueur.defense}")
         
         # Afficher l'inventaire du joueur
         joueur.show_inventory()
@@ -115,20 +115,20 @@ def start_game():
         elif current_position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
             if combat(joueur, boss):
-                print("Vous avez vaincu le boss et gagné le jeu !")
+                print("Vous avez vaincu le boss et gagné le jeu !\n")
                 break
             else:
-                print("Vous avez perdu contre le boss. Fin de la partie.")
+                print("Vous avez perdu contre le boss. Fin de la partie.\n")
                 break
 
         # Vérifier si le joueur a trouvé tous les trésors
         if treasures_found == total_treasures:
-            print("Félicitations ! Vous avez trouvé tous les trésors !")
+            print("Félicitations ! Vous avez trouvé tous les trésors !\n")
             break
 
         # Vérifier les vies restantes
         if joueur.health <= 0:
-            print("Game over ! Vous n'avez plus de vies.")
+            print("Game over ! Vous n'avez plus de vies.\n")
             break
 
 def describe_location():
@@ -178,15 +178,14 @@ def combat(player, enemy):
     while enemy.is_alive() and player.health > 0:
         print(f"{enemy.name} attaque !")
         damage_to_player = enemy.attack_player(player)
-        print(f"{enemy.name} inflige {damage_to_player} points de dégâts. {player.name} a {player.health} points de vie restants.")
+        print(f"{enemy.name} inflige {damage_to_player} points de dégâts. {player.name} a {player.health} points de vie restants et {player.defense} de shield.\n")
         
         if player.health <= 0:
             print(f"{player.name} a été vaincu par {enemy.name}.")
             return False
         
         print(f"{player.name} contre-attaque !")
-        damage_to_enemy = player.attack_target(enemy)
-        print(f"{player.name} inflige {damage_to_enemy} points de dégâts. {enemy.name} a {enemy.health} points de vie restants.")
+        player.attack_target(enemy)
         
         if not enemy.is_alive():
             print(f"{enemy.name} est vaincu !")
@@ -199,6 +198,8 @@ def combat(player, enemy):
                 print(f"{enemy.name} laisse tomber {item.name} ({item.rarity}).")
                 player.pickup_item(item)
             
+             # Attendre que le joueur appuie sur "Entrée" avant de continuer
+            input("Appuyez sur Entrée pour continuer...")
             return True
 
     return player.health > 0

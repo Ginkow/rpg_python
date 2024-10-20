@@ -14,11 +14,29 @@ class Enemy:
         return self.health > 0
 
     def attack_player(self, player):
-        damage = self.attack - player.defense
-        if damage < 0:
-            damage = 0
-        player.health -= damage
+        # Calcul des dégâts infligés par l'ennemi
+        damage = self.attack
+        if damage < 1:  # Assurer que les dégâts minimum sont de 1
+            damage = 1
+
+        # Si le joueur a du bouclier, les dégâts vont d'abord réduire le bouclier
+        if player.defense > 0:
+            if damage >= player.defense:
+                # Si les dégâts dépassent ou égalent la défense, tout le bouclier est détruit
+                damage -= player.defense
+                player.defense = 0  # Bouclier épuisé
+                player.health -= damage  # Dégâts restants affectent la santé
+            else:
+                # Si les dégâts sont inférieurs à la défense, seule la défense est réduite
+                player.defense -= damage
+        else:
+            # Si le joueur n'a pas de bouclier, les dégâts affectent directement la santé
+            player.health -= damage
+
         return damage
+
+
+
 
     def generate_loot(self):
         # Objets par rareté
@@ -26,22 +44,17 @@ class Enemy:
         epic = [inventory.pv_mid, inventory.deg_mid, inventory.gun]
         legendary = [inventory.pv_max, inventory.deg_max]
 
-        possible_loot = []
+        rarity_roll = random.random()
 
-        # Le monstre peut laisser entre 1 et 3 objets
-        loot_count = random.randint(1, 3)
-        
-        for _ in range(loot_count):
-            rarity_roll = random.random()
-            
-            # 60% de chance pour un objet commun
-            if rarity_roll <= 0.6:
-                possible_loot.append(random.choice(commune))
-            # 30% de chance pour un objet épique
-            elif rarity_roll <= 0.9:
-                possible_loot.append(random.choice(epic))
-            # 10% de chance pour un objet légendaire
-            else:
-                possible_loot.append(random.choice(legendary))
+        # 60% de chance pour un objet commun
+        if rarity_roll <= 0.6:
+            loot = random.choice(commune)
+        # 30% de chance pour un objet épique
+        elif rarity_roll <= 0.9:
+            loot = random.choice(epic)
+        # 10% de chance pour un objet légendaire
+        else:
+            loot = random.choice(legendary)
 
-        return possible_loot
+        return [loot]  # Retourner l'objet sous forme de liste pour rester compatible avec le reste du code
+

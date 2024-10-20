@@ -2,7 +2,7 @@ import random
 import os
 import ennemy
 import save
-from datetime import datetime
+import datetime
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
@@ -40,7 +40,7 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
     # Logique pour gérer le déroulement de la partie
     while loaded_player.is_alive() and enemies:
         clear_terminal()
-        print(f"Vous êtes à la position {loaded_player.position}. Trésors trouvés : {treasures_found}, Vies restantes : {loaded_player.health}")
+        print(f"Vous êtes à la position {loaded_player.position}. Trésors trouvés : {treasures_found}, Vies restantes : {loaded_player.health}, Boucliers restants: {loaded_player.defense}")
 
         # Afficher l'inventaire du joueur
         loaded_player.show_inventory()
@@ -61,24 +61,53 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
             if loaded_player.position == enemy.position and enemy.is_alive():
                 print(f"Un {enemy.name} vous attaque !")
                 
-                # Le joueur peut utiliser une potion ou une arme avant le combat
-                action = input("Voulez-vous utiliser un objet avant de combattre ? (oui/non) : ")
-                if action.lower() == "oui":
-                    item_name = input("Entrez le nom de l'objet à utiliser : ")
-                    loaded_player.use_item(item_name)
+                # Demander au joueur s'il veut combattre
+                choice = input("Voulez-vous combattre ? (oui/non) : ")
+                if choice.lower() == "oui":
+                    # Le joueur peut utiliser une potion ou une arme avant le combat
+                    action = input("Voulez-vous utiliser un objet avant de combattre ? (oui/non) : ")
+                    if action.lower() == "oui":
+                        item_name = input("Entrez le nom de l'objet à utiliser : ")
+                        loaded_player.use_item(item_name)
 
-                # Combat entre le joueur et l'ennemi
-                if not combat(loaded_player, enemy):
-                    print("Vous êtes mort. Fin de la partie.")
-                    return
+                    # Combat entre le joueur et l'ennemi
+                    if not combat(loaded_player, enemy):
+                        print("Vous êtes mort. Fin de la partie.")
+                        return
+                else:
+                    print("Vous choisissez de fuir le combat.")
 
         if loaded_player.position == TREASURE_POSITION:
             print("Vous avez trouvé un trésor !")
             treasures_found += 1
 
+        gobelin_alive = any(enemy for enemy in enemies if enemy.name == "Gobelin" and enemy.is_alive())
+        if loaded_player.position == GOBELIN_POSITION and gobelin_alive:
+            print("Un Gobelin vous attaque !")
+            gobelin = ennemy.Enemy("Gobelin", 50, 10, 10, GOBELIN_POSITION)  # Crée un nouvel ennemi
+            choice = input("Voulez-vous combattre ? (oui/non) : ")
+            if choice.lower() == "oui":
+                if not combat(loaded_player, gobelin):
+                    print("Vous êtes mort. Fin de la partie.")
+                    return
+            else:
+                print("Vous choisissez de fuir le combat.")
+        
+        orc_alive = any(enemy for enemy in enemies if enemy.name == "Orc" and enemy.is_alive())
+        if loaded_player.position == ORC_POSITION and orc_alive:
+            print("Un Orc vous attaque !")
+            orc = ennemy.Enemy("Orc", 75, 15, 25, ORC_POSITION)  # Crée un nouvel ennemi
+            choice = input("Voulez-vous combattre ? (oui/non) : ")
+            if choice.lower() == "oui":
+                if not combat(loaded_player, orc):
+                    print("Vous êtes mort. Fin de la partie.\n")
+                    return
+            else:
+                print("Vous choisissez de fuir le combat.")
+
         elif loaded_player.position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
-            if combat(loaded_player, ennemy.Enemy("Dragon", 50, 15, 10, BOSS_POSITION)):
+            if combat(loaded_player, ennemy.Enemy("Dragon", 100, 30, 100, BOSS_POSITION)):
                 print("Vous avez vaincu le boss et gagné le jeu !")
                 break
             else:
@@ -142,20 +171,19 @@ def combat(player, enemy):
     while enemy.is_alive() and player.health > 0:
         print(f"{enemy.name} attaque !")
         damage_to_player = enemy.attack_player(player)
-        print(f"{enemy.name} inflige {damage_to_player} points de dégâts. {player.name} a {player.health} points de vie restants.")
+        print(f"{enemy.name} inflige {damage_to_player} points de dégâts. {player.name} a {player.health} points de vie restants et {player.defense} de shield.\n")
         
         if player.health <= 0:
             print(f"{player.name} a été vaincu par {enemy.name}.")
             return False
         
         print(f"{player.name} contre-attaque !")
-        damage_to_enemy = player.attack_target(enemy)
-        print(f"{player.name} inflige {damage_to_enemy} points de dégâts. {enemy.name} a {enemy.health} points de vie restants.")
+        player.attack_target(enemy)
         
         if not enemy.is_alive():
             print(f"{enemy.name} est vaincu !")
             # Récompense d'expérience
-            player.experience += 10 
+            player.experience += 10
             
             # Génération de loot
             loot = enemy.generate_loot()
@@ -163,6 +191,8 @@ def combat(player, enemy):
                 print(f"{enemy.name} laisse tomber {item.name} ({item.rarity}).")
                 player.pickup_item(item)
             
+             # Attendre que le joueur appuie sur "Entrée" avant de continuer
+            input("Appuyez sur Entrée pour continuer...")
             return True
 
     return player.health > 0
