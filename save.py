@@ -2,7 +2,7 @@ import json
 from player import Player
 from ennemy import Enemy
 from inventory import get_item_by_name
-from datetime import datetime
+import datetime
 
 def generate_save_name():
     """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles."""
@@ -31,9 +31,11 @@ def save_game(player, enemies, position, treasures_found, defeated_enemies, save
             {
                 'name': enemy.name,
                 'health': enemy.health,
+                'max_health': enemy.max_health,
                 'attack': enemy.attack,
                 'defense': enemy.defense,
                 'position': enemy.position,
+                'level': enemy.level,
                 'defeated': not enemy.is_alive()
             }
             for enemy in enemies
@@ -89,7 +91,7 @@ def load_game(filename):
 
         # Créer des instances des ennemis
         enemies = [
-            Enemy(enemy['name'], enemy['health'], enemy['attack'], enemy['defense'], enemy['position'])
+            Enemy(enemy['name'], enemy['health'], enemy['max_health'], enemy['attack'], enemy['defense'], enemy['position'], enemy['level'])
             for enemy in enemies_data
         ]
 

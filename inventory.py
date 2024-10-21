@@ -20,9 +20,9 @@ class HealthPotion(Item):
         print(f"{items.name} a utilisé {self.name} ({self.rarity}) et récupéré {self.value} points de vie. Vie actuelle: {items.health}/{items.max_health}")
 
 # Liste des potions de vie
-pv_min = HealthPotion("Potion de vie min", 25, "Commune")
-pv_mid = HealthPotion("Potion de vie moyenne", 50, "Épique")
-pv_max = HealthPotion("Potion de vie max", 100, "Légendaire")
+pv_min = HealthPotion("Potion 25", 25, "Commune")
+pv_mid = HealthPotion("Potion 50", 50, "Épique")
+pv_max = HealthPotion("Potion 100", 100, "Légendaire")
 
 class DamageBoostPotion(Item):
     def __init__(self, name, damage_increase, turns, rarity):
@@ -36,9 +36,9 @@ class DamageBoostPotion(Item):
         print(f"{items.name} a utilisé {self.name} ({self.rarity}) et a gagné {self.value} points de dégâts supplémentaires pour {self.turns} tour(s).")
 
 # Liste des potions de boost de dégâts
-deg_min = DamageBoostPotion("Potion de boost de dégâts min", 15, 3, "Commune")
-deg_mid = DamageBoostPotion("Potion de boost de dégâts moyenne", 50, 2, "Épique")
-deg_max = DamageBoostPotion("Potion de boost de dégâts max", 75, 1, "Légendaire")
+deg_min = DamageBoostPotion("Boost 15", 15, 3, "Commune")
+deg_mid = DamageBoostPotion("Boost 30", 30, 2, "Épique")
+deg_max = DamageBoostPotion("Boost 50", 50, 1, "Légendaire")
 
 class Weapon(Item):
     def __init__(self, name, damage, rarity, extra_effect=None):
@@ -62,12 +62,12 @@ arc = Weapon("Arc", 15, "Commune",extra_effect=25)
 
 # Dictionnaire pour retrouver les objets par nom
 item_classes = {
-    "Potion de vie (25HP)": pv_min,
-    "Potion de vie (50HP)": pv_mid,
-    "Potion de vie (100HP)": pv_max,
-    "Potion de boost de dégâts (+10)": deg_min,
-    "Potion de boost de dégâts (+25)": deg_mid,
-    "Potion de boost de dégâts (+50)": deg_max,
+    "Potion 25 (25HP)": pv_min,
+    "Potion 50 (50HP)": pv_mid,
+    "Potion 100 (100HP)": pv_max,
+    "Boost 15 (+15)": deg_min,
+    "Boost 30 (+30)": deg_mid,
+    "Boost 50 (+50)": deg_max,
     "Pistolet": gun,
     "Harpon": harpoon,
     "Arc": arc

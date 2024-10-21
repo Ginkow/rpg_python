@@ -1,3 +1,5 @@
+from inventory import Weapon
+
 class Player:
     def __init__(self, name, level, health, max_health, attack, defense, inventory, weapon, experience, experience_to_next_level, position=(0, 0)):
         self.name = name
@@ -12,7 +14,7 @@ class Player:
         self.experience_to_next_level = experience_to_next_level
         self.damage_boost = 0
         self.boost_turns = 0
-        self.position = position  # Position du joueur
+        self.position = position
     
     def is_alive(self):
         """Vérifie si le joueur est encore en vie."""
@@ -49,26 +51,38 @@ class Player:
                 self.damage_boost = 0
                 print(f"Le boost de dégâts de {self.name} a expiré.")
 
-        # Diminuer le nombre de tours de boost de dégâts
-        if self.boost_turns > 0:
-            self.boost_turns -= 1
-            if self.boost_turns == 0:
-                self.damage_boost = 0
-                print(f"Le boost de dégâts de {self.name} a expiré.")
-
     def pickup_item(self, item):
         """Ajoute un objet à l'inventaire du joueur."""
         self.inventory.append(item)
         print(f"{self.name} a ramassé un(e) {item.name} !")
 
-    def use_item(self, item_name):
-        """Utilise un objet de l'inventaire en fonction du nom."""
+    def use_item(self, item_name, target=None):
+        """Utilise un objet de l'inventaire en fonction du nom. Si c'est une arme, nécessite une cible."""
         for item in self.inventory:
             if item.name == item_name:
-                item.use(self)
+                if isinstance(item, Weapon):
+                    # Si aucune cible n'est donnée, on vérifie si le joueur est en combat avec un ennemi
+                    if target is None:
+                        if hasattr(self, 'current_enemy') and self.current_enemy is not None and self.current_enemy.is_alive():
+                            target = self.current_enemy 
+                        else:
+                            print(f"Vous devez choisir une cible pour utiliser {item.name}.")
+                            return
+                    
+                    # Utilisation de l'arme contre la cible (l'ennemi actuel)
+                    item.use(self, target)  # On passe le joueur et la cible
+                else:
+                    item.use(self)
+                
+                # Supprimer l'item de l'inventaire après utilisation
                 self.inventory.remove(item)
+                print(f"{self.name} a utilisé {item.name}, et l'item a été retiré de l'inventaire.\n")
                 return
+
         print(f"Objet {item_name} non trouvé dans l'inventaire.\n")
+
+
+
 
     def show_inventory(self):
         """Affiche tous les objets dans l'inventaire du joueur."""

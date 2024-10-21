@@ -2,13 +2,15 @@ import random
 import inventory
 
 class Enemy:
-    def __init__(self, name, health, attack, defense, position):
+    def __init__(self, name, health, max_health, attack, defense, position, level):
         self.name = name
         self.health = health
+        self.max_health = max_health
         self.attack = attack
         self.defense = defense
         self.position = position
         self.alive = True
+        self.level = level
 
     def is_alive(self):
         return self.health > 0
