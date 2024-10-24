@@ -56,42 +56,47 @@ class Player:
         self.inventory.append(item)
         print(f"{self.name} a ramassé un(e) {item.name} !")
 
-    def use_item(self, item_name, target=None):
-        """Utilise un objet de l'inventaire en fonction du nom. Si c'est une arme, nécessite une cible."""
-        for item in self.inventory:
-            if item.name == item_name:
-                if isinstance(item, Weapon):
-                    # Si aucune cible n'est donnée, on vérifie si le joueur est en combat avec un ennemi
-                    if target is None:
-                        if hasattr(self, 'current_enemy') and self.current_enemy is not None and self.current_enemy.is_alive():
-                            target = self.current_enemy 
-                        else:
-                            print(f"Vous devez choisir une cible pour utiliser {item.name}.")
-                            return
-                    
-                    # Utilisation de l'arme contre la cible (l'ennemi actuel)
-                    item.use(self, target)  # On passe le joueur et la cible
-                else:
-                    item.use(self)
+    def use_item(self, item_index, target=None):
+        """Utilise un objet de l'inventaire en fonction de son index."""
+        # Convertir l'index donné en entier et vérifier sa validité
+        try:
+            item_index = int(item_index) - 1  # L'utilisateur entre un numéro à partir de 1, donc on ajuste l'index
+        except ValueError:
+            print("Entrée invalide. Veuillez entrer un numéro correspondant à un objet.")
+            return
+
+        if 0 <= item_index < len(self.inventory):
+            item = self.inventory[item_index]
+            if isinstance(item, Weapon):
+                # Si aucune cible n'est donnée, on vérifie si le joueur est en combat avec un ennemi
+                if target is None:
+                    if hasattr(self, 'current_enemy') and self.current_enemy is not None and self.current_enemy.is_alive():
+                        target = self.current_enemy 
+                    else:
+                        print(f"Vous devez choisir une cible pour utiliser {item.name}.")
+                        return
                 
-                # Supprimer l'item de l'inventaire après utilisation
-                self.inventory.remove(item)
-                print(f"{self.name} a utilisé {item.name}, et l'item a été retiré de l'inventaire.\n")
-                return
+                # Utilisation de l'arme contre la cible (l'ennemi actuel)
+                item.use(self, target)  # On passe le joueur et la cible
+            else:
+                item.use(self)
 
-        print(f"Objet {item_name} non trouvé dans l'inventaire.\n")
-
-
-
+            # Supprimer l'item de l'inventaire après utilisation
+            self.inventory.remove(item)
+            print(f"{self.name} a utilisé {item.name}, et l'item a été retiré de l'inventaire.\n")
+        else:
+            print(f"Numéro d'objet invalide. Choisissez un numéro entre 1 et {len(self.inventory)}.")
+            
 
     def show_inventory(self):
-        """Affiche tous les objets dans l'inventaire du joueur."""
+        """Affiche tous les objets dans l'inventaire du joueur avec des numéros."""
         if not self.inventory:
             print(f"L'inventaire de {self.name} est vide.")
         else:
             print(f"Inventaire de {self.name}:")
-            for item in self.inventory:
-                print(f"- {item.name}")
+            for idx, item in enumerate(self.inventory, 1):
+                print(f"{idx}. {item.name}")
+
 
     def use_skill(self, target):
         """Compétence spéciale infligeant 70 points de dégâts."""

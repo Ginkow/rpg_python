@@ -42,7 +42,7 @@ class Enemy:
 
     def generate_loot(self):
         # Objets par rareté
-        commune = [inventory.pv_min, inventory.deg_min, inventory.harpoon, inventory.arc]
+        commune = [inventory.pv_min, inventory.deg_min, inventory.harpon, inventory.arc]
         epic = [inventory.pv_mid, inventory.deg_mid, inventory.gun]
         legendary = [inventory.pv_max, inventory.deg_max]
 

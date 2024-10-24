@@ -2,6 +2,7 @@ import random
 import os  # Importer le module os pour vider le terminal
 import player
 import ennemy
+import inventory
 import save
 import startgameload
 from datetime import datetime
@@ -59,9 +60,11 @@ def start_game():
     
     treasures_found = 0
     current_position = (0, 0)
-    total_treasures = 1
     defeated_enemies = []
-        
+    
+    # Liste pour suivre les trésors collectés
+    treasures_collected = []
+
     inventory_displayed = False  # État de l'affichage de l'inventaire
 
     while joueur.health > 0:
@@ -76,7 +79,7 @@ def start_game():
         describe_location()
 
         # Entrer une commande de déplacement (zqsd ou go east, etc.)
-        move = input("Entrez votre mouvement (zqsd, go east, etc.) ou appuyez sur 'i' pour afficher/masquer l'inventaire, 'exit' pour quitter: ")
+        move = input("Entrez votre mouvement (zqsd, go east, etc.) ou appuyez sur 'i' pour afficher/masquer l'inventaire, 'exit' pour quitter: \n")
 
         # Vérification si le joueur veut afficher/masquer l'inventaire
         if move.lower() == 'i':
@@ -104,8 +107,32 @@ def start_game():
                     return
 
         if current_position == TREASURE_POSITION:
-            print("Vous avez trouvé un trésor !")
-            treasures_found += 1
+            # Vérifie si le trésor a déjà été récupéré
+            if "treasure_1" not in treasures_collected:
+                print("Vous avez trouvé un trésor !\n")
+                treasures_found += 1
+
+                # Générer et donner deux objets aléatoires au joueur
+                loot = inventory.generate_random_loot()
+                item_names = [item.name for item in loot]  # Crée une liste avec les noms des objets
+
+                # Afficher les objets récupérés
+                print(f"Vous avez récupéré {item_names[0]} et {item_names[1]}.\n")
+                for item in loot:
+                    joueur.pickup_item(item)
+
+                # Marque ce trésor comme récupéré
+                treasures_collected.append("treasure_1")
+
+                # Attendre que le joueur appuie sur une touche avant de continuer
+                input("\nAppuyez sur Entrée pour continuer...")
+
+            else:
+                print("Vous avez déjà récupéré ce trésor.\n")
+                input("\nAppuyez sur Entrée pour continuer...")
+            
+            # Continuer le jeu après avoir trouvé le trésor
+            continue  # Reprend la boucle du jeu, sans finir
 
         elif current_position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
@@ -116,15 +143,11 @@ def start_game():
                 print("Vous avez perdu contre le boss. Fin de la partie.\n")
                 break
 
-        # Vérifier si le joueur a trouvé tous les trésors
-        if treasures_found == total_treasures:
-            print("Félicitations ! Vous avez trouvé tous les trésors !\n")
-            break
-
         # Vérifier les vies restantes
         if joueur.health <= 0:
             print("Game over ! Vous n'avez plus de vies.\n")
             break
+
 
 
 def describe_location():

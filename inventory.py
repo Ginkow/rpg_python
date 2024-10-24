@@ -1,3 +1,5 @@
+import random
+
 class Item:
     def __init__(self, name, effect, value, rarity):
         self.name = name
@@ -57,7 +59,7 @@ class Weapon(Item):
 
 # Liste des armes
 gun = Weapon("Pistolet", 40, "Épique")
-harpoon = Weapon("Harpon", 25, "Commune")
+harpon = Weapon("Harpon", 25, "Commune")
 arc = Weapon("Arc", 15, "Commune",extra_effect=25)
 
 # Dictionnaire pour retrouver les objets par nom
@@ -69,9 +71,14 @@ item_classes = {
     "Boost 30 (+30)": deg_mid,
     "Boost 50 (+50)": deg_max,
     "Pistolet": gun,
-    "Harpon": harpoon,
+    "Harpon": harpon,
     "Arc": arc
 }
 
 def get_item_by_name(name):
     return item_classes.get(name)
+
+def generate_random_loot():
+    """Génère deux objets aléatoires à partir d'une liste prédéfinie."""
+    loot_items = [pv_min, pv_mid, pv_max, deg_min, deg_mid, deg_max, gun, harpon, arc]  # Liste d'objets possibles
+    return random.sample(loot_items, 2)  # Retourne 2 objets aléatoires
