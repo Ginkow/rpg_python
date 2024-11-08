@@ -5,6 +5,7 @@ import save
 from datetime import datetime
 import inventory
 import player
+from launch import game
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
@@ -122,37 +123,15 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
             # Continuer le jeu après avoir trouvé le trésor
             continue  # Reprend la boucle du jeu, sans finir
 
-        # gobelin_alive = any(enemy for enemy in enemies if enemy.name == "Gobelin" and enemy.is_alive())
-        # if loaded_player.position == GOBELIN_POSITION and gobelin_alive:
-        #     print("Un Gobelin vous attaque !")
-        #     gobelin = ennemy.Enemy("Gobelin", 50, 50, 10, 10, GOBELIN_POSITION, 15)  # Crée un nouvel ennemi
-        #     choice = input("Voulez-vous combattre ? (oui/non) : ")
-        #     if choice.lower() == "oui":
-        #         if not combat(loaded_player, gobelin):
-        #             print("Vous êtes mort. Fin de la partie.")
-        #             return
-        #     else:
-        #         print("Vous choisissez de fuir le combat.")
-        
-        # orc_alive = any(enemy for enemy in enemies if enemy.name == "Orc" and enemy.is_alive())
-        # if loaded_player.position == ORC_POSITION and orc_alive:
-        #     print("Un Orc vous attaque !")
-        #     orc = ennemy.Enemy("Orc", 75, 75, 15, 25, ORC_POSITION, 30)  # Crée un nouvel ennemi
-        #     choice = input("Voulez-vous combattre ? (oui/non) : ")
-        #     if choice.lower() == "oui":
-        #         if not combat(loaded_player, orc):
-        #             print("Vous êtes mort. Fin de la partie.\n")
-        #             return
-        #     else:
-        #         print("Vous choisissez de fuir le combat.")
-
         elif current_position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
-            if combat(loaded_player, boss):
-                print("Vous avez vaincu le boss et gagné le jeu !")
+            if combat(loaded_player, boss, defeated_enemies):
+                print("Vous avez vaincu le boss et gagné le jeu !\n")
+                game()
                 break
             else:
-                print("Vous avez perdu contre le boss. Fin de la partie.")
+                print("Vous avez perdu contre le boss. Fin de la partie.\n")
+                game()
                 break
 
         # Vérifier si le joueur a trouvé tous les trésors

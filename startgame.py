@@ -6,6 +6,7 @@ import inventory
 import save
 import startgameload
 from datetime import datetime
+from launch import game
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
@@ -136,11 +137,13 @@ def start_game():
 
         elif current_position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
-            if combat(joueur, boss):
+            if combat(joueur, boss, defeated_enemies):
                 print("Vous avez vaincu le boss et gagné le jeu !\n")
+                game()
                 break
             else:
                 print("Vous avez perdu contre le boss. Fin de la partie.\n")
+                game()
                 break
 
         # Vérifier les vies restantes

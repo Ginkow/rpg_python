@@ -1,0 +1,53 @@
+{
+    "player": {
+        "name": "dsq",
+        "level": 10,
+        "health": 100,
+        "max_health": 100,
+        "attack": 20,
+        "defense": 70,
+        "weapon": "\u00e9p\u00e9e",
+        "inventory": [
+            "Boost 30"
+        ],
+        "experience": 110,
+        "experience_to_next_level": 200,
+        "position": [
+            4,
+            2
+        ],
+        "alive": true
+    },
+    "enemies": [
+        {
+            "name": "Gobelin",
+            "health": 0,
+            "max_health": 50,
+            "attack": 10,
+            "defense": 0,
+            "position": [
+                4,
+                2
+            ],
+            "level": 15,
+            "defeated": true
+        },
+        {
+            "name": "Orc",
+            "health": 75,
+            "max_health": 75,
+            "attack": 15,
+            "defense": 25,
+            "position": [
+                3,
+                4
+            ],
+            "level": 30,
+            "defeated": false
+        }
+    ],
+    "treasures_found": 0,
+    "defeated_enemies": [
+        "Gobelin"
+    ]
+}
