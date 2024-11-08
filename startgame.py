@@ -93,14 +93,14 @@ def start_game():
 
         # Vérification des événements
         for enemy in enemies:
-            if current_position == enemy.position and enemy.is_alive():
+            if current_position == enemy.position and enemy.is_alive() and enemy.name not in defeated_enemies:
                 print(f"Un {enemy.name} vous attaque !")
                 
                 # Le joueur peut utiliser une potion ou une arme avant le combat
                 action = input("Voulez-vous utiliser un objet avant de combattre ? (oui/non) : ")
                 if action.lower() == "oui":
                     # Combat entre le joueur et l'ennemi
-                    combat(joueur, enemy)
+                    combat(joueur, enemy, defeated_enemies)
 
                 if joueur.health <= 0:
                     print("Vous êtes mort. Fin de la partie.")
@@ -193,7 +193,7 @@ def update_position(move, current_position, player, enemies, treasures_found, de
     
     return current_position
 
-def combat(player, enemy):
+def combat(player, enemy, defeated_enemies):
     # Boucle tant que les deux sont vivants
     while enemy.is_alive() and player.health > 0:
         print(f"\n*** Combat contre {enemy.name} (Niveau {enemy.level}) ***")
@@ -221,7 +221,7 @@ def combat(player, enemy):
 
         # Si l'ennemi est mort après l'attaque ou l'utilisation de l'objet, le combat s'arrête ici
         if not enemy.is_alive():
-            print(f"{enemy.name} est vaincu !")
+            print(f"{enemy.name} est vaincu !"); defeated_enemies.append(enemy.name)
             player.experience += 10
             loot = enemy.generate_loot()
             for item in loot:

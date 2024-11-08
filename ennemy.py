@@ -37,9 +37,6 @@ class Enemy:
 
         return damage
 
-
-
-
     def generate_loot(self):
         # Objets par rareté
         commune = [inventory.pv_min, inventory.deg_min, inventory.harpon, inventory.arc]

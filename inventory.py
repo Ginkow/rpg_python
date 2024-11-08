@@ -64,12 +64,12 @@ arc = Weapon("Arc", 15, "Commune",extra_effect=25)
 
 # Dictionnaire pour retrouver les objets par nom
 item_classes = {
-    "Potion 25 (25HP)": pv_min,
-    "Potion 50 (50HP)": pv_mid,
-    "Potion 100 (100HP)": pv_max,
-    "Boost 15 (+15)": deg_min,
-    "Boost 30 (+30)": deg_mid,
-    "Boost 50 (+50)": deg_max,
+    "Potion 25": pv_min,
+    "Potion 50": pv_mid,
+    "Potion 100": pv_max,
+    "Boost 15": deg_min,
+    "Boost 30": deg_mid,
+    "Boost 50": deg_max,
     "Pistolet": gun,
     "Harpon": harpon,
     "Arc": arc
