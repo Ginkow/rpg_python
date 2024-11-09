@@ -2,13 +2,12 @@ import json
 from player import Player
 from ennemy import Enemy
 from inventory import get_item_by_name
-import datetime
+from datetime import datetime
 
 def generate_save_name():
     """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # Format: YYYYMMDD_HHMMSS
     return f"save/game_save_{timestamp}.json"
-
 
 def save_game(player, enemies, position, treasures_found, defeated_enemies, save_name):
     """Sauvegarde l'état du jeu dans un fichier JSON."""
@@ -34,7 +33,7 @@ def save_game(player, enemies, position, treasures_found, defeated_enemies, save
                 'max_health': enemy.max_health,
                 'attack': enemy.attack,
                 'defense': enemy.defense,
-                'position': enemy.position,
+                'position': enemy.position,  # Enregistre la position de l'ennemi
                 'level': enemy.level,
                 'defeated': not enemy.is_alive()
             }
@@ -44,10 +43,9 @@ def save_game(player, enemies, position, treasures_found, defeated_enemies, save
         'defeated_enemies': defeated_enemies
     }
 
-    with open(save_name, 'w') as save_file: 
+    with open(save_name, 'w') as save_file:
         json.dump(game_data, save_file, indent=4)
     print("Partie sauvegardée avec succès.")
-
 
 def load_inventory(inventory_data):
     """Charge l'inventaire à partir des données sauvegardées."""
@@ -89,9 +87,17 @@ def load_game(filename):
             experience_to_next_level=player_data['experience_to_next_level']
         )
 
-        # Créer des instances des ennemis
+        # Créer des instances des ennemis avec les positions chargées
         enemies = [
-            Enemy(enemy['name'], enemy['health'], enemy['max_health'], enemy['attack'], enemy['defense'], enemy['position'], enemy['level'])
+            Enemy(
+                enemy['name'],
+                enemy['health'],
+                enemy['max_health'],
+                enemy['attack'],
+                enemy['defense'],
+                enemy['position'],  # Utilise la position chargée au lieu d'une position aléatoire
+                enemy['level']
+            )
             for enemy in enemies_data
         ]
 

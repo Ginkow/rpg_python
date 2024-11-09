@@ -1,0 +1,115 @@
+{
+    "player": {
+        "name": "dqs",
+        "level": 10,
+        "health": 100,
+        "max_health": 100,
+        "attack": 20,
+        "defense": 40,
+        "weapon": "\u00e9p\u00e9e",
+        "inventory": [
+            "Potion 25"
+        ],
+        "experience": 110,
+        "experience_to_next_level": 200,
+        "position": [
+            9,
+            3
+        ],
+        "alive": true
+    },
+    "enemies": [
+        {
+            "name": "Gobelin",
+            "health": 50,
+            "max_health": 50,
+            "attack": 10,
+            "defense": 10,
+            "position": [
+                2,
+                2
+            ],
+            "level": 15,
+            "defeated": false
+        },
+        {
+            "name": "Gobelin",
+            "health": 50,
+            "max_health": 50,
+            "attack": 10,
+            "defense": 10,
+            "position": [
+                9,
+                0
+            ],
+            "level": 15,
+            "defeated": false
+        },
+        {
+            "name": "Gobelin",
+            "health": 50,
+            "max_health": 50,
+            "attack": 10,
+            "defense": 10,
+            "position": [
+                6,
+                6
+            ],
+            "level": 15,
+            "defeated": false
+        },
+        {
+            "name": "Orc",
+            "health": 0,
+            "max_health": 75,
+            "attack": 15,
+            "defense": 0,
+            "position": null,
+            "level": 30,
+            "defeated": true
+        },
+        {
+            "name": "Orc",
+            "health": 75,
+            "max_health": 75,
+            "attack": 15,
+            "defense": 25,
+            "position": [
+                6,
+                7
+            ],
+            "level": 30,
+            "defeated": false
+        },
+        {
+            "name": "Elfe",
+            "health": 100,
+            "max_health": 100,
+            "attack": 20,
+            "defense": 15,
+            "position": [
+                4,
+                3
+            ],
+            "level": 25,
+            "defeated": false
+        },
+        {
+            "name": "Elfe",
+            "health": 100,
+            "max_health": 100,
+            "attack": 20,
+            "defense": 15,
+            "position": [
+                9,
+                5
+            ],
+            "level": 25,
+            "defeated": false
+        }
+    ],
+    "treasures_found": 0,
+    "defeated_enemies": [
+        "Orc"
+    ]
+}

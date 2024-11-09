@@ -7,10 +7,10 @@ import save
 import startgameload
 from datetime import datetime
 from launch import game
+import tresors
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
-TREASURE_POSITION = (2, 3)
 GOBELIN_POSITION = (4, 2)
 ORC_POSITION = (3, 4)
 
@@ -42,24 +42,19 @@ def start_loaded_game(player, enemies, current_position, treasures_found, defeat
         startgameload.start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies)
 
 def start_game():
-    treasure = TREASURE_POSITION
+    treasure = tresors.TREASURE_POSITION
     clear_terminal()
     print("Bienvenue dans le jeu !")
     
     name = input("Entrez votre nom pour commencer le jeu: ")
     # Initialisation du joueur
     joueur = player.Player(name, 10, 100, 100, 20, 100, [], "épée", 100, 200)
-
-    # Initialisation des ennemis
-    enemies = [
-        ennemy.Enemy("Gobelin", 50, 50, 10, 10, GOBELIN_POSITION, 15),
-        ennemy.Enemy("Orc", 75, 75, 15, 25, ORC_POSITION, 30)
-    ]
-    boss = ennemy.Enemy("Dragon", 2500, 2500, 30, 100, BOSS_POSITION, 430)
+    boss = ennemy.Enemy("Dragon", 2000, 2500, 30, 500, BOSS_POSITION, 430)
     
     print(f"Bienvenue, {joueur.name}!")
     print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
-    
+
+        
     total_treasures = 1
     treasures_found = 0
     current_position = (0, 0)
@@ -73,6 +68,10 @@ def start_game():
     while joueur.health > 0:
         clear_terminal()
         print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}, Boucliers restants: {joueur.defense}")
+        
+        #Afficher position ennemies
+        for enemy in ennemy.enemies:
+            print(f"Position de {enemy.name} : {enemy.position}")
         
         # Afficher l'inventaire si demandé
         if inventory_displayed:
@@ -90,12 +89,12 @@ def start_game():
             continue  # Retourne au début de la boucle pour éviter d'exécuter le reste du code
 
         # Mise à jour de la position avec les bons paramètres
-        new_position = update_position(move, current_position, joueur, enemies, treasures_found, defeated_enemies)
+        new_position = update_position(move, current_position, joueur, ennemy.enemies, treasures_found, defeated_enemies)
         if new_position != current_position:
             current_position = new_position
 
         # Vérification des événements
-        for enemy in enemies:
+        for enemy in ennemy.enemies:
             if current_position == enemy.position and enemy.is_alive() and enemy.name not in defeated_enemies:
                 print(f"Un {enemy.name} vous attaque !")
                 
@@ -204,7 +203,6 @@ def update_position(move, current_position, player, enemies, treasures_found, de
     return current_position
 
 def combat(player, enemy, defeated_enemies):
-    # Boucle tant que les deux sont vivants
     while enemy.is_alive() and player.health > 0:
         print(f"\n*** Combat contre {enemy.name} (Niveau {enemy.level}) ***")
         print(f"{player.name}: {player.health}/{player.max_health} HP, {player.defense} de bouclier.")
@@ -231,7 +229,9 @@ def combat(player, enemy, defeated_enemies):
 
         # Si l'ennemi est mort après l'attaque ou l'utilisation de l'objet, le combat s'arrête ici
         if not enemy.is_alive():
-            print(f"{enemy.name} est vaincu !"); defeated_enemies.append(enemy.name)
+            print(f"{enemy.name} est vaincu !")
+            defeated_enemies.append(enemy.name)
+            enemy.defeat()  # Marque l'ennemi comme vaincu
             player.experience += 10
             loot = enemy.generate_loot()
             for item in loot:
