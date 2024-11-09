@@ -42,6 +42,7 @@ def start_loaded_game(player, enemies, current_position, treasures_found, defeat
         startgameload.start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies)
 
 def start_game():
+    treasure = TREASURE_POSITION
     clear_terminal()
     print("Bienvenue dans le jeu !")
     
@@ -59,6 +60,7 @@ def start_game():
     print(f"Bienvenue, {joueur.name}!")
     print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
     
+    total_treasures = 1
     treasures_found = 0
     current_position = (0, 0)
     defeated_enemies = []
@@ -107,7 +109,7 @@ def start_game():
                     print("Vous êtes mort. Fin de la partie.")
                     return
 
-        if current_position == TREASURE_POSITION:
+        if current_position == treasure:
             # Vérifie si le trésor a déjà été récupéré
             if "treasure_1" not in treasures_collected:
                 print("Vous avez trouvé un trésor !\n")
@@ -133,6 +135,11 @@ def start_game():
                 input("\nAppuyez sur Entrée pour continuer...")
             
             # Continuer le jeu après avoir trouvé le trésor
+            continue  # Reprend la boucle du jeu, sans finir
+        
+        if treasures_found == total_treasures:
+            print("Félicitations ! Vous avez trouvé tous les trésors !")
+            treasure = None
             continue  # Reprend la boucle du jeu, sans finir
 
         elif current_position == BOSS_POSITION:

@@ -35,6 +35,7 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
     """Démarre une partie avec les données chargées."""
     print(f"Démarrage de la partie avec {loaded_player.name} à la position {current_position}.")
 
+    treasure = TREASURE_POSITION
     # Mettre à jour la position du joueur
     loaded_player.position = current_position  # Définir la position du joueur à celle chargée
 
@@ -73,7 +74,7 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
         new_position = update_position(move, loaded_player.position, loaded_player, enemies, treasures_found, defeated_enemies)
         if new_position != loaded_player.position:
             loaded_player.position = new_position
-            current_position = new_position  # Mettez également à jour current_position
+            current_position = new_position
 
         # Vérification des événements
         for enemy in enemies:
@@ -95,7 +96,7 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
                         return
 
 
-        if current_position == TREASURE_POSITION:
+        if current_position == treasure:
             # Vérifie si le trésor a déjà été récupéré
             if "treasure_1" not in treasures_collected:
                 print("Vous avez trouvé un trésor !\n")
@@ -122,6 +123,12 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
             
             # Continuer le jeu après avoir trouvé le trésor
             continue  # Reprend la boucle du jeu, sans finir
+        
+        if treasures_found == total_treasures:
+            print("Félicitations ! Vous avez trouvé tous les trésors !")
+            treasure = None
+            continue  # Reprend la boucle du jeu, sans finir
+
 
         elif current_position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
@@ -133,11 +140,6 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
                 print("Vous avez perdu contre le boss. Fin de la partie.\n")
                 game()
                 break
-
-        # Vérifier si le joueur a trouvé tous les trésors
-        if treasures_found == total_treasures:
-            print("Félicitations ! Vous avez trouvé tous les trésors !")
-            break
 
         # Vérifier les vies restantes
         if loaded_player.health <= 0:
