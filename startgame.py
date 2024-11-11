@@ -72,7 +72,7 @@ def start_game():
         #Afficher position ennemies
         for enemy in ennemy.enemies:
             print(f"Position de {enemy.name} : {enemy.position}")
-        
+        print(f"Position du coffre: {tresors.TREASURE_POSITION}")
         # Afficher l'inventaire si demandé
         if inventory_displayed:
             joueur.show_inventory()

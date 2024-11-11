@@ -13,7 +13,7 @@ BOSS_POSITION = (5, 5)
 
 def generate_save_name(base_name="game_save", directory='save/', extension='.json'):
     """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles, en évitant les doublons."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # Format: YYYYMMDD_HHMMSS
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_name = f"{base_name}_{timestamp}{extension}"
     
     # Vérifie si le fichier existe déjà et ajuste le nom si nécessaire
@@ -29,15 +29,23 @@ def clear_terminal():
     # Vider le terminal en fonction du système d'exploitation
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def start_loaded_game(loaded_player, enemies, current_position, treasures_found, defeated_enemies):
-    """Démarre une partie avec les données chargées."""
+def start_loaded_game(loaded_player, saved_enemies_data, current_position, treasures_found, defeated_enemies):
+    """Démarre une partie avec les données chargées en excluant les ennemis vaincus."""
     print(f"Démarrage de la partie avec {loaded_player.name} à la position {current_position}.")
 
     treasure = tresors.TREASURE_POSITION
     
-    # Mettre à jour la position du joueur
-    loaded_player.position = current_position  # Définir la position du joueur à celle chargée
+    # Charger les ennemis restants en excluant ceux dans defeated_enemies
+    enemies = []
+    for enemy in saved_enemies_data:
+        if enemy.name in defeated_enemies:
+            continue  # Ignorer les ennemis déjà vaincus
+        enemies.append(enemy)
 
+    # Définir la position actuelle du joueur
+    loaded_player.position = current_position
+
+    # Initialiser le boss
     boss = ennemy.Enemy("Dragon", 2000, 2500, 30, 500, BOSS_POSITION, 430)
     loaded_player = player.Player(loaded_player.name, loaded_player.level, loaded_player.health, 100, 20, loaded_player.defense, [], "épée", loaded_player.experience, 200, current_position)
     
@@ -45,14 +53,16 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
     inventory_displayed = False
     treasures_collected = []
 
-    # Logique pour gérer le déroulement de la partie
+    # Logique principale de la partie
     while loaded_player.is_alive() and enemies:
         clear_terminal()
         print(f"Vous êtes à la position {loaded_player.position}. Trésors trouvés : {treasures_found}, Vies restantes : {loaded_player.health}, Boucliers restants: {loaded_player.defense}")
         
-        #Afficher position ennemies
-        for enemy in ennemy.enemies:
+        # Afficher les positions des ennemis restants
+        for enemy in enemies:
             print(f"Position de {enemy.name} : {enemy.position}")
+        
+        print(f"Position du coffre: {tresors.TREASURE_POSITION}")
         
         # Afficher l'inventaire si demandé
         if inventory_displayed:
@@ -67,7 +77,7 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
         # Vérification si le joueur veut afficher/masquer l'inventaire
         if move.lower() == 'i':
             inventory_displayed = not inventory_displayed  # Alterne l'état de l'inventaire
-            continue  # Retourne au début de la boucle pour éviter d'exécuter le reste du code
+            continue
 
         # Mise à jour de la position avec les bons paramètres
         new_position = update_position(move, loaded_player.position, loaded_player, enemies, treasures_found, defeated_enemies)
@@ -76,24 +86,21 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
             current_position = new_position
 
         # Vérification des événements
-        for enemy in ennemy.enemies:
+        for enemy in enemies:
             if current_position == enemy.position:
                 if enemy.name in defeated_enemies:
-                    print(f"{enemy.name} est déjà vaincu, vous continuez votre chemin.")
-                    continue
+                    continue  # Ennemi vaincu, rien ne se passe
                 elif enemy.is_alive():
                     print(f"Un {enemy.name} vous attaque !")
                                         
                     # Le joueur peut utiliser une potion ou une arme avant le combat
                     action = input("Voulez-vous utiliser un objet avant de combattre ? (oui/non) : ")
                     if action.lower() == "oui":
-                        # Combat entre le joueur et l'ennemi
                         combat(loaded_player, enemy, defeated_enemies)
 
                     if loaded_player.health <= 0:
                         print("Vous êtes mort. Fin de la partie.")
                         return
-
 
         if current_position == treasure:
             # Vérifie si le trésor a déjà été récupéré
@@ -103,31 +110,24 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
 
                 # Générer et donner deux objets aléatoires au joueur
                 loot = inventory.generate_random_loot()
-                item_names = [item.name for item in loot]  # Crée une liste avec les noms des objets
-
-                # Afficher les objets récupérés
+                item_names = [item.name for item in loot]
                 print(f"Vous avez récupéré {item_names[0]} et {item_names[1]}.\n")
                 for item in loot:
                     loaded_player.pickup_item(item)
 
-                # Marque ce trésor comme récupéré
                 treasures_collected.append("treasure_1")
-
-                # Attendre que le joueur appuie sur une touche avant de continuer
                 input("\nAppuyez sur Entrée pour continuer...")
 
             else:
                 print("Vous avez déjà récupéré ce trésor.\n")
                 input("\nAppuyez sur Entrée pour continuer...")
             
-            # Continuer le jeu après avoir trouvé le trésor
-            continue  # Reprend la boucle du jeu, sans finir
+            continue
         
         if treasures_found == total_treasures:
             print("Félicitations ! Vous avez trouvé tous les trésors !")
             treasure = None
-            continue  # Reprend la boucle du jeu, sans finir
-
+            continue
 
         elif current_position == BOSS_POSITION:
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
@@ -144,6 +144,7 @@ def start_loaded_game(loaded_player, enemies, current_position, treasures_found,
         if loaded_player.health <= 0:
             print("Game over ! Vous n'avez plus de vies.")
             break
+
 
 
 def describe_location():
