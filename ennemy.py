@@ -76,19 +76,22 @@ positions = set()  # Ensemble pour éviter les chevauchements de position
 enemies = []
 
 # Créer trois Gobelins avec des positions uniques
-for _ in range(3):
+for i in range(1, 4):  # '4' représente le nombre total de Gobelins souhaités (ici, 3 Gobelins)
     GOBELIN_POSITION = generate_unique_position(positions)
     positions.add(GOBELIN_POSITION)
-    enemies.append(Enemy("Gobelin", 50, 50, 10, 10, GOBELIN_POSITION, 15))
-
+    gobelin_name = f"Gobelin {i}"
+    enemies.append(Enemy(gobelin_name, 50, 50, 10, 10, GOBELIN_POSITION, 15))
+    
 # Créer trois Orcs avec des positions uniques
-for _ in range(2):
+for i in range(1, 3):
     ORC_POSITION = generate_unique_position(positions)
     positions.add(ORC_POSITION)
-    enemies.append(Enemy("Orc", 75, 75, 15, 25, ORC_POSITION, 30))
+    orc_name = f"Orc {i}"
+    enemies.append(Enemy(orc_name, 75, 75, 15, 25, ORC_POSITION, 30))
 
 # Créer trois Elfes avec des positions uniques
-for _ in range(2):
+for i in range(1, 3):
     ELFE_POSITION = generate_unique_position(positions)
     positions.add(ELFE_POSITION)
-    enemies.append(Enemy("Elfe", 100, 100, 20, 15, ELFE_POSITION, 25))
+    elfe_name = f"Elfe {i}"
+    enemies.append(Enemy(elfe_name, 100, 100, 20, 15, ELFE_POSITION, 25))

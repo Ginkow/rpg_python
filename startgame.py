@@ -69,10 +69,15 @@ def start_game():
         clear_terminal()
         print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}, Boucliers restants: {joueur.defense}")
         
+        active_enemies = [enemy for enemy in ennemy.enemies if enemy.name not in defeated_enemies]
         #Afficher position ennemies
-        for enemy in ennemy.enemies:
+        for enemy in active_enemies:
             print(f"Position de {enemy.name} : {enemy.position}")
-        print(f"Position du coffre: {tresors.TREASURE_POSITION}")
+            
+        if tresors.TREASURE_POSITION is not None:
+            print(f"Position du coffre: {tresors.TREASURE_POSITION}")
+
+        
         # Afficher l'inventaire si demandé
         if inventory_displayed:
             joueur.show_inventory()
@@ -125,6 +130,7 @@ def start_game():
 
                 # Marque ce trésor comme récupéré
                 treasures_collected.append("treasure_1")
+                tresors.mark_treasure_collected() 
 
                 # Attendre que le joueur appuie sur une touche avant de continuer
                 input("\nAppuyez sur Entrée pour continuer...")

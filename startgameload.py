@@ -58,11 +58,15 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
         clear_terminal()
         print(f"Vous êtes à la position {loaded_player.position}. Trésors trouvés : {treasures_found}, Vies restantes : {loaded_player.health}, Boucliers restants: {loaded_player.defense}")
         
+        active_enemies = [enemy for enemy in ennemy.enemies if enemy.name not in defeated_enemies]
         # Afficher les positions des ennemis restants
-        for enemy in enemies:
+        for enemy in active_enemies:
             print(f"Position de {enemy.name} : {enemy.position}")
         
-        print(f"Position du coffre: {tresors.TREASURE_POSITION}")
+        if treasures_found < total_treasures:
+            print(f"Position du coffre: {tresors.TREASURE_POSITION}")
+        else:
+            tresors.mark_treasure_collected()
         
         # Afficher l'inventaire si demandé
         if inventory_displayed:
@@ -116,6 +120,7 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
                     loaded_player.pickup_item(item)
 
                 treasures_collected.append("treasure_1")
+                tresors.mark_treasure_collected()
                 input("\nAppuyez sur Entrée pour continuer...")
 
             else:
