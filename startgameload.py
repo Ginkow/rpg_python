@@ -53,6 +53,9 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
     inventory_displayed = False
     treasures_collected = []
 
+    # Afficher l'inventaire au démarrage
+    loaded_player.show_inventory()
+    
     # Logique principale de la partie
     while loaded_player.is_alive() and enemies:
         clear_terminal()

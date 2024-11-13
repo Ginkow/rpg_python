@@ -18,7 +18,7 @@ class Enemy:
         self.level = level
 
     def is_alive(self):
-        return self.health > 0  and self.alive
+        return self.health > 0 and self.alive
 
     def attack_player(self, player):
         # Calcul des dégâts infligés par l'ennemi
@@ -64,14 +64,13 @@ class Enemy:
         self.alive = False
         self.position = None
 
-# Fonction pour générer une position unique dans la grille
 def generate_unique_position(existing_positions):
+    forbidden_positions = [(0, 0), (5, 5)]
     while True:
         position = (random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1))
-        if position not in existing_positions:
+        if position not in existing_positions and position not in forbidden_positions:
             return position
 
-# Génération des ennemis avec des positions uniques
 positions = set()  # Ensemble pour éviter les chevauchements de position
 enemies = []
 
@@ -82,14 +81,14 @@ for i in range(1, 4):  # '4' représente le nombre total de Gobelins souhaités 
     gobelin_name = f"Gobelin {i}"
     enemies.append(Enemy(gobelin_name, 50, 50, 10, 10, GOBELIN_POSITION, 15))
     
-# Créer trois Orcs avec des positions uniques
+# Créer deux Orcs avec des positions uniques
 for i in range(1, 3):
     ORC_POSITION = generate_unique_position(positions)
     positions.add(ORC_POSITION)
     orc_name = f"Orc {i}"
     enemies.append(Enemy(orc_name, 75, 75, 15, 25, ORC_POSITION, 30))
 
-# Créer trois Elfes avec des positions uniques
+# Créer deux Elfes avec des positions uniques
 for i in range(1, 3):
     ELFE_POSITION = generate_unique_position(positions)
     positions.add(ELFE_POSITION)
