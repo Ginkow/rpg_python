@@ -11,27 +11,22 @@ import tresors
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
-GOBELIN_POSITION = (4, 2)
-ORC_POSITION = (3, 4)
 
 
 def clear_terminal():
-    # Vider le terminal en fonction du système d'exploitation
     os.system('cls' if os.name == 'nt' else 'clear')
-    
+
 def generate_save_name(base_name="game_save", directory='save/', extension='.json'):
-    """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles, en évitant les doublons."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # Format: YYYYMMDD_HHMMSS
-    save_name = f"{base_name}_{timestamp}{extension}"
-    
-    # Vérifie si le fichier existe déjà et ajuste le nom si nécessaire
-    i = 1
-    while os.path.exists(os.path.join(directory, save_name)):
-        save_name = f"{base_name}_{timestamp}_{i}{extension}"
-        i += 1
-    
-    return os.path.join(directory, save_name)  # Retourne le chemin complet
-    
+    """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles, en utilisant .json."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    save_name = f"{directory}{base_name}_{timestamp}{extension}"
+    return save_name
+
+def save_game_state(player, enemies, position, treasures_found, defeated_enemies):
+    save_name = generate_save_name()
+    save.save_game(player, enemies, position, treasures_found, defeated_enemies, save_name)
+    print(f"Game saved as {save_name}")
+
 def start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies):
     """Démarre une partie avec les données chargées."""
     print(f"Démarrage de la partie avec {player.name} à la position {current_position}.")

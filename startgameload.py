@@ -47,15 +47,12 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
 
     # Initialiser le boss
     boss = ennemy.Enemy("Dragon", 2000, 2500, 30, 500, BOSS_POSITION, 430)
-    loaded_player = player.Player(loaded_player.name, loaded_player.level, loaded_player.health, 100, 20, loaded_player.defense, [], "épée", loaded_player.experience, 200, current_position)
+    loaded_player = player.Player(loaded_player.name, loaded_player.level, loaded_player.health, 100, 20, loaded_player.defense, loaded_player.inventory, "épée", loaded_player.experience, 200, current_position)
     
     total_treasures = 1
     inventory_displayed = False
     treasures_collected = []
 
-    # Afficher l'inventaire au démarrage
-    loaded_player.show_inventory()
-    
     # Logique principale de la partie
     while loaded_player.is_alive() and enemies:
         clear_terminal()
@@ -93,7 +90,7 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
             current_position = new_position
 
         # Vérification des événements
-        for enemy in enemies:
+        for enemy in ennemy.enemies:
             if current_position == enemy.position:
                 if enemy.name in defeated_enemies:
                     continue  # Ennemi vaincu, rien ne se passe

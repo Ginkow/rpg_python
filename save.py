@@ -95,7 +95,7 @@ def load_game(filename):
                 enemy['max_health'],
                 enemy['attack'],
                 enemy['defense'],
-                enemy['position'],
+                enemy['position'],  # Utilise la position chargée au lieu d'une position aléatoire
                 enemy['level']
             )
             for enemy in enemies_data

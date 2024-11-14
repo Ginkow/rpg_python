@@ -8,7 +8,7 @@ class Player:
         self.max_health = max_health
         self.attack = 20
         self.defense = defense
-        self.inventory = []
+        self.inventory = inventory
         self.weapon = weapon
         self.experience = experience
         self.experience_to_next_level = experience_to_next_level
