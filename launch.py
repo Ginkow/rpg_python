@@ -2,6 +2,7 @@ import os
 import startgame
 import about
 import save
+import time
 
 # Function to list all save files in the specified directory with a specific file extension
 def list_saves(directory='save/', extension='.json'):
@@ -30,6 +31,8 @@ def game():
             saves = list_saves()
             if not saves:
                 print("No save files found.")
+                time.sleep(0.2)
+                startgame.clear_terminal()
                 continue
             
             # Display all available save files to the user
