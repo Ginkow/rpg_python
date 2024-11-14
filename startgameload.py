@@ -110,8 +110,8 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
                     print(f"A {enemy.name} attacks you!")
                                         
                     # Ask if the player wants to use an item before combat
-                    action = input("Do you want to use an item before fighting? (yes/no): ")
-                    if action.lower() == "yes":
+                    action = input("Do you want to use an item before fighting? (Y/N): ")
+                    if action.lower() == "y":
                         combat(loaded_player, enemy, defeated_enemies)
 
                     # End the game if the player dies
@@ -153,17 +153,30 @@ def start_loaded_game(loaded_player, saved_enemies_data, current_position, treas
 
         # Check if player encounters the boss
         elif current_position == BOSS_POSITION:
-            print("You found the boss! Prepare to fight.")
-            if combat(loaded_player, boss, defeated_enemies):
-                print("You defeated the boss and won the game!\n")
-                time.sleep(2)
-                game()
-                break
+            print("You have encountered the boss! Do you want to engage in battle?")
+            
+            # Ask the player if they want to fight the boss
+            fight_boss = input("Do you want to fight the boss? (Y/N): ")
+            
+            if fight_boss.lower() == "y":
+                print("Prepare for battle!")
+                
+                if combat(loaded_player, boss, defeated_enemies):
+                    print("You defeated the boss and won the game!\n")
+                    time.sleep(2)
+                    clear_terminal()
+                    game()
+                    break
+                else:
+                    print("You lost against the boss. Game over.\n")
+                    time.sleep(2)
+                    clear_terminal()
+                    game()
+                    break
             else:
-                print("You lost to the boss. Game over.\n")
-                time.sleep(2)
-                game()
-                break
+                print("You chose to avoid the boss. Move carefully!")
+                # Continue the game loop without fighting the boss
+                continue
 
         # End game if the player has no health left
         if loaded_player.health <= 0:
@@ -186,10 +199,10 @@ def update_position(move, current_position, player, enemies, treasures_found, de
     
     # Handle player exit request
     if move == "exit":
-        confirm_exit = input("Do you want to quit the game? (yes/no): ")
-        if confirm_exit.lower() == "yes":
-            save_game = input("Do you want to save the game before quitting? (yes/no): ")
-            if save_game.lower() == "yes":
+        confirm_exit = input("Do you want to quit the game? (Y/N): ")
+        if confirm_exit.lower() == "y":
+            save_game = input("Do you want to save the game before quitting? (Y/N): ")
+            if save_game.lower() == "y":
                 save_name = generate_save_name()
                 save.save_game(player, enemies, current_position, treasures_found, defeated_enemies, save_name)
                 print("Game saved. Goodbye!")
@@ -217,36 +230,47 @@ def update_position(move, current_position, player, enemies, treasures_found, de
 
 # Combat function for handling player and enemy actions
 def combat(player, enemy, defeated_enemies):
-    # Loop while both are alive
     while enemy.is_alive() and player.health > 0:
-        print(f"\n*** Combat against {enemy.name} (Level {enemy.level}) ***")
+        print(f"\n*** Battle with {enemy.name} (Level {enemy.level}) ***")
         print(f"{player.name}: {player.health}/{player.max_health} HP, {player.defense} shield.")
         print(f"{enemy.name}: {enemy.health}/{enemy.max_health} HP, {enemy.defense} shield.\n")
 
         # Player's turn
-        print("\nYour turn!")
-        action = input("What do you want to do? (1: Attack, 2: Use an item): ")
+        while True:  # Repeat until a valid action is taken
+            print("\nYour turn!")
+            action = input("What do you want to do? (1: Attack, 2: Use an item): ")
 
-        if action == "1":
-            # Player chooses to attack
-            print(f"{player.name} attacks {enemy.name}!")
-            player.attack_target(enemy)
-        elif action == "2":
-            # Player chooses to use an item
-            if not player.inventory:
-                print("Inventory is empty, performing a normal attack.\n")
+            if action == "1":
+                print(f"{player.name} attacks {enemy.name}!")
                 player.attack_target(enemy)
-            else:
-                player.show_inventory()
-                item_name = input("Which item do you want to use? : ")
-                player.use_item(item_name, target=enemy)
+                break  # Exit the action loop and continue combat
+            elif action == "2":
+                # Use item from inventory if available
+                if not player.inventory:
+                    print("Inventory empty, performing a normal attack.\n")
+                    player.attack_target(enemy)
+                    break  # Exit the action loop and continue combat
+                else:
+                    player.show_inventory()
+                    item_choice = input("Which item do you want to use? (Type 'back' to return to main menu): ")
 
-        # Stop combat if the enemy is defeated
+                    # Allow the player to go back to the main combat menu
+                    if item_choice.lower() == "back":
+                        print("Returning to main menu.")
+                        continue  # Restart the action loop
+
+                    # Attempt to use the chosen item if valid
+                    player.use_item(item_choice, target=enemy)
+                    break  # Exit the action loop and continue combat
+            else:
+                print("Invalid choice. Please select 1 or 2.")
+
+        # Check if the enemy was defeated
         if not enemy.is_alive():
-            print(f"{enemy.name} is defeated!")
+            print(f"{enemy.name} has been defeated!")
             defeated_enemies.append(enemy.name)
-            enemy.defeat() 
-            exp_gained = enemy.level 
+            enemy.defeat()
+            exp_gained = enemy.level
             player.gain_experience(exp_gained)
             print(f"You gained {exp_gained} experience points for defeating {enemy.name}!\n")
 
@@ -267,3 +291,4 @@ def combat(player, enemy, defeated_enemies):
             return False 
 
     return player.health > 0
+
