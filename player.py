@@ -1,7 +1,9 @@
 from inventory import Weapon
 
+# Player class representing the main character
 class Player:
     def __init__(self, name, level, health, max_health, attack, defense, inventory, weapon, experience, experience_to_next_level, position=(0, 0)):
+        # Initialize player attributes
         self.name = name
         self.level = level
         self.health = health
@@ -18,118 +20,115 @@ class Player:
         self.level_up_message = ""
     
     def is_alive(self):
-        """Vérifie si le joueur est encore en vie."""
+        """Check if the player is still alive."""
         return self.health > 0
     
     def gain_experience(self, amount):
-        """Gagne de l'expérience et passe de niveau si le seuil est atteint."""
+        """Gain experience and level up if the threshold is reached."""
         self.experience += amount
-        print(f"{self.name} gagne {amount} points d'expérience.")
+        print(f"{self.name} gains {amount} experience points.")
 
-        # Boucle pour gérer plusieurs montées de niveau en cas de gros gains d'expérience
+        # Loop to handle multiple level-ups in case of high experience gain
         while self.experience >= self.experience_to_next_level:
-            # Passer au niveau suivant
+            # Advance to the next level
             self.experience -= self.experience_to_next_level
             self.level += 1
 
-            # Augmenter la santé et l'attaque selon le niveau
-            self.max_health += 10 * self.level # Santé maximale augmentée de 10 par niveau
-            self.attack += 2 * self.level  # Attaque augmentée de 2 par niveau
+            # Increase health and attack based on the new level
+            self.max_health += 10 * self.level 
+            self.attack += 2 * self.level 
 
-            # Restaurer santé et bouclier au maximum
-            self.health = self.max_health  # Santé actuelle rétablie au maximum
-            self.defense = 100  # Bouclier rétabli au maximum
+            # Restore health and shield to maximum
+            self.health = self.max_health
+            self.defense = 100
 
-            # Augmenter l'expérience nécessaire pour le prochain niveau
+            # Increase experience needed for the next level
             self.experience_to_next_level += 10
 
-            # Message de montée de niveau
-            self.level_up_message = f"Félicitations ! Vous êtes maintenant niveau {self.level} !"
-            print(f"Santé maximale augmentée à {self.max_health}, attaque augmentée à {self.attack}.")
-            print(f"Votre santé et bouclier sont restaurés : {self.health} HP et {self.defense} de bouclier.\n")
-
+            # Level-up message
+            self.level_up_message = f"Congratulations! You are now level {self.level}!"
+            print(f"Max health increased to {self.max_health}, attack increased to {self.attack}.")
+            print(f"Health and shield restored to: {self.health} HP and {self.defense} shield.\n")
 
     def attack_target(self, target):
-        # Calculer les dégâts en prenant en compte le boost temporaire
+        # Calculate damage considering any temporary boost
         total_attack = self.attack + self.damage_boost
         damage = total_attack
 
-        # Si l'ennemi a du bouclier, les dégâts affectent d'abord le bouclier
+        # Damage first affects the target's shield if present
         if target.defense > 0:
             if damage >= target.defense:
-                # Si les dégâts sont supérieurs ou égaux au bouclier, tout le bouclier est détruit
-                damage_to_health = damage - target.defense  # Calculer les dégâts restants après le bouclier
-                print(f"{self.name} détruit le bouclier de {target.name} ({target.defense} points de défense).")
-                target.defense = 0  # Bouclier épuisé
-                target.health -= damage_to_health  # Dégâts restants affectent la santé
-                print(f"{self.name} inflige {damage_to_health} points de dégâts à {target.name}. {target.name} a {target.health} points de vie restants.\n")
+                # If damage exceeds shield, deplete shield and apply remainder to health
+                damage_to_health = damage - target.defense
+                print(f"{self.name} destroys {target.name}'s shield ({target.defense} defense points).")
+                target.defense = 0
+                target.health -= damage_to_health
+                print(f"{self.name} deals {damage_to_health} damage to {target.name}. {target.name} has {target.health} HP left.\n")
             else:
-                # Si les dégâts sont inférieurs au bouclier, seule la défense est réduite
+                # If damage is less than shield, only reduce shield
                 target.defense -= damage
-                print(f"{self.name} réduit le bouclier de {target.name} de {damage} points. Il reste {target.defense} points de bouclier.\n")
+                print(f"{self.name} reduces {target.name}'s shield by {damage}. {target.defense} shield remains.\n")
         else:
-            # Si l'ennemi n'a plus de bouclier, les dégâts affectent directement la santé
+            # If no shield, damage directly reduces health
             target.health -= damage
-            print(f"{self.name} attaque {target.name} et inflige {damage} points de dégâts. {target.name} a {target.health} points de vie restants.\n")
+            print(f"{self.name} attacks {target.name} and deals {damage} damage. {target.name} has {target.health} HP left.\n")
 
-        # Diminuer le nombre de tours de boost de dégâts
+        # Reduce the remaining turns of damage boost
         if self.boost_turns > 0:
             self.boost_turns -= 1
             if self.boost_turns == 0:
                 self.damage_boost = 0
-                print(f"Le boost de dégâts de {self.name} a expiré.")
+                print(f"{self.name}'s damage boost has expired.")
 
     def pickup_item(self, item):
-        """Ajoute un objet à l'inventaire du joueur."""
+        """Add an item to the player's inventory."""
         self.inventory.append(item)
-        print(f"{self.name} a ramassé un(e) {item.name} !")
+        print(f"{self.name} picked up {item.name}!")
 
     def use_item(self, item_index, target=None):
-        """Utilise un objet de l'inventaire en fonction de son index."""
-        # Convertir l'index donné en entier et vérifier sa validité
+        """Use an item from the inventory based on its index."""
+        # Convert the provided index to an integer and validate it
         try:
-            item_index = int(item_index) - 1  # L'utilisateur entre un numéro à partir de 1, donc on ajuste l'index
+            item_index = int(item_index) - 1
         except ValueError:
-            print("Entrée invalide. Veuillez entrer un numéro correspondant à un objet.")
+            print("Invalid entry. Please enter a number corresponding to an item.")
             return
 
         if 0 <= item_index < len(self.inventory):
             item = self.inventory[item_index]
             if isinstance(item, Weapon):
-                # Si aucune cible n'est donnée, on vérifie si le joueur est en combat avec un ennemi
+                # If target not specified, check if the player is in combat with an enemy
                 if target is None:
                     if hasattr(self, 'current_enemy') and self.current_enemy is not None and self.current_enemy.is_alive():
-                        target = self.current_enemy 
+                        target = self.current_enemy
                     else:
-                        print(f"Vous devez choisir une cible pour utiliser {item.name}.")
+                        print(f"You need to choose a target to use {item.name}.")
                         return
                 
-                # Utilisation de l'arme contre la cible (l'ennemi actuel)
-                item.use(self, target)  # On passe le joueur et la cible
+                # Use the weapon on the target
+                item.use(self, target)
             else:
                 item.use(self)
 
-            # Supprimer l'item de l'inventaire après utilisation
+            # Remove the used item from inventory
             self.inventory.remove(item)
-            print(f"{self.name} a utilisé {item.name}, et l'item a été retiré de l'inventaire.\n")
+            print(f"{self.name} used {item.name}, and it has been removed from the inventory.\n")
         else:
-            print(f"Numéro d'objet invalide. Choisissez un numéro entre 1 et {len(self.inventory)}.")
-            
+            print(f"Invalid item number. Choose a number between 1 and {len(self.inventory)}.")
 
     def show_inventory(self):
-        """Affiche tous les objets dans l'inventaire du joueur avec des numéros."""
+        """Display all items in the player's inventory with numbering."""
         if not self.inventory:
-            print(f"L'inventaire de {self.name} est vide.")
+            print(f"{self.name}'s inventory is empty.")
         else:
-            print(f"Inventaire de {self.name}:")
+            print(f"{self.name}'s inventory:")
             for idx, item in enumerate(self.inventory, 1):
                 print(f"{idx}. {item.name}")
 
-
     def use_skill(self, target):
-        """Compétence spéciale infligeant 70 points de dégâts."""
+        """Special skill dealing 70 damage points."""
         skill_damage = 70
-        print(f"{self.name} utilise une compétence spéciale !")
+        print(f"{self.name} uses a special skill!")
         target.health -= skill_damage
-        print(f"{target.name} reçoit {skill_damage} points de dégâts !")
+        print(f"{target.name} receives {skill_damage} damage!")
         return skill_damage

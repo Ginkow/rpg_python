@@ -1,5 +1,5 @@
 import random
-import os  # Importer le module os pour vider le terminal
+import os 
 import player
 import ennemy
 import inventory
@@ -10,193 +10,190 @@ from launch import game
 import tresors
 import time
 
-# Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
 
-
+# Function to clear the terminal screen
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+# Generate a unique save file name based on the current date and time
 def generate_save_name(base_name="game_save", directory='save/', extension='.json'):
-    """Génère un nom de fichier de sauvegarde basé sur la date et l'heure actuelles, en utilisant .json."""
+    """Generates a save file name based on the current date and time, using .json extension."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_name = f"{directory}{base_name}_{timestamp}{extension}"
     return save_name
 
+# Save the game state including the player's data, enemies, position, treasures, and defeated enemies
 def save_game_state(player, enemies, position, treasures_found, defeated_enemies):
     save_name = generate_save_name()
     save.save_game(player, enemies, position, treasures_found, defeated_enemies, save_name)
     print(f"Game saved as {save_name}")
 
+# Start a loaded game with the saved player data and game state
 def start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies):
-    """Démarre une partie avec les données chargées."""
-    print(f"Démarrage de la partie avec {player.name} à la position {current_position}.")
+    """Starts a game with loaded data."""
+    print(f"Starting the game with {player.name} at position {current_position}.")
     
-    # Logique pour gérer le déroulement de la partie
+    # Main loop to handle gameplay
     while player.is_alive() and enemies:
-        print(f"Vous êtes à la position {current_position}.")
+        print(f"You are at position {current_position}.")
         startgameload.start_loaded_game(player, enemies, current_position, treasures_found, defeated_enemies)
 
+# Start a new game
 def start_game():
     treasure = tresors.TREASURE_POSITION
     clear_terminal()
-    print("Bienvenue dans le jeu !")
+    print("Welcome to the game!")
     
-    name = input("Entrez votre nom pour commencer le jeu: ")
-    # Initialisation du joueur
-    joueur = player.Player(name, 1, 100, 100, 20, 100, [], "épée", 0, 20)
+    name = input("Enter your name to start the game: ")
+    joueur = player.Player(name, 1, 100, 100, 20, 100, [], "sword", 0, 20)
     boss = ennemy.Enemy("Dragon", 1000, 1000, 30, 250, BOSS_POSITION, 430)
     
-    print(f"Bienvenue, {joueur.name}!")
-    print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
+    print(f"Welcome, {joueur.name}!")
+    print(f"You have {joueur.health} HP and your goal is to find all treasures while avoiding obstacles, monsters, and the final boss.")
 
-        
     total_treasures = 1
     treasures_found = 0
     current_position = (0, 0)
     defeated_enemies = []
-    
-    # Liste pour suivre les trésors collectés
     treasures_collected = []
 
-    inventory_displayed = False  # État de l'affichage de l'inventaire
+    inventory_displayed = False
 
+    # Main game loop
     while joueur.health > 0:
         clear_terminal()
         
+        # Display level-up message if applicable
         if joueur.level_up_message:
             print(joueur.level_up_message)
             joueur.level_up_message = ""
             
-        print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}, Boucliers restants: {joueur.defense}, Level: {joueur.level}")
+        # Display player status and game information
+        print(f"Current Position: {current_position}, Treasures Found: {treasures_found}, Remaining Health: {joueur.health}, Remaining Shields: {joueur.defense}, Level: {joueur.level}")
         
-        active_enemies = [enemy for enemy in ennemy.enemies if enemy.name not in defeated_enemies]
-        # #Afficher position ennemies
-        for enemy in active_enemies:
-            print(f"Position de {enemy.name} : {enemy.position}")
+        # # Display the positions of active enemies
+        # active_enemies = [enemy for enemy in ennemy.enemies if enemy.name not in defeated_enemies]
+        # for enemy in active_enemies:
+        #     print(f"{enemy.name} Position: {enemy.position}")
             
-        if tresors.TREASURE_POSITION is not None:
-            print(f"Position du coffre: {tresors.TREASURE_POSITION}")
+        # # Display the treasure position if it exists
+        # if tresors.TREASURE_POSITION is not None:
+        #     print(f"Treasure Position: {tresors.TREASURE_POSITION}")
         
-        # Afficher l'inventaire si demandé
+        # Show inventory if the player has toggled it
         if inventory_displayed:
             joueur.show_inventory()
 
-        # Décrire l'emplacement
+        # Describe the player's current location
         describe_location()
 
-        # Entrer une commande de déplacement (zqsd ou go east, etc.)
-        move = input("Entrez votre mouvement (zqsd, go east, etc.) ou appuyez sur 'i' pour afficher/masquer l'inventaire, 'exit' pour quitter: \n")
+        move = input("Enter your move (zqsd, go east, etc.) or press 'i' to toggle inventory, 'exit' to quit: \n")
 
-        # Vérification si le joueur veut afficher/masquer l'inventaire
+        # Toggle inventory display if 'i' is pressed
         if move.lower() == 'i':
-            inventory_displayed = not inventory_displayed  # Alterne l'état de l'inventaire
-            continue  # Retourne au début de la boucle pour éviter d'exécuter le reste du code
+            inventory_displayed = not inventory_displayed
+            continue 
 
-        # Mise à jour de la position avec les bons paramètres
+        # Update position based on player's move
         new_position = update_position(move, current_position, joueur, ennemy.enemies, treasures_found, defeated_enemies)
         if new_position != current_position:
             current_position = new_position
 
-        # Vérification des événements
+        # Check for events such as enemy encounters or finding treasures
         for enemy in ennemy.enemies:
             if current_position == enemy.position and enemy.is_alive() and enemy.name not in defeated_enemies:
-                print(f"Un {enemy.name} vous attaque !")
+                print(f"A {enemy.name} attacks you!")
                 
-                # Le joueur peut utiliser une potion ou une arme avant le combat
-                action = input("Voulez-vous utiliser un objet avant de combattre ? (oui/non) : ")
-                if action.lower() == "oui":
-                    # Combat entre le joueur et l'ennemi
+                # Ask the player if they want to use an item before combat
+                action = input("Do you want to use an item before fighting? (yes/no): ")
+                if action.lower() == "yes":
                     combat(joueur, enemy, defeated_enemies)
 
                 if joueur.health <= 0:
-                    print("Vous êtes mort. Fin de la partie.")
+                    print("You have died. Game over.")
                     time.sleep(2)
                     clear_terminal()
                     return
 
+        # Handle treasure collection
         if current_position == treasure:
-            # Vérifie si le trésor a déjà été récupéré
             if "treasure_1" not in treasures_collected:
-                print("Vous avez trouvé un trésor !\n")
+                print("You found a treasure!\n")
                 treasures_found += 1
 
-                # Générer et donner deux objets aléatoires au joueur
+                # Generate random loot and add to inventory
                 loot = inventory.generate_random_loot()
-                item_names = [item.name for item in loot]  # Crée une liste avec les noms des objets
-
-                # Afficher les objets récupérés
-                print(f"Vous avez récupéré {item_names[0]} et {item_names[1]}.\n")
+                item_names = [item.name for item in loot]
+                print(f"You collected {item_names[0]} and {item_names[1]}.\n")
                 for item in loot:
                     joueur.pickup_item(item)
 
-                # Marque ce trésor comme récupéré
                 treasures_collected.append("treasure_1")
                 tresors.mark_treasure_collected() 
-
-                # Attendre que le joueur appuie sur une touche avant de continuer
-                input("\nAppuyez sur Entrée pour continuer...")
+                input("\nPress Enter to continue...")
 
             else:
-                print("Vous avez déjà récupéré ce trésor.\n")
-                input("\nAppuyez sur Entrée pour continuer...")
+                print("You have already collected this treasure.\n")
+                input("\nPress Enter to continue...")
             
-            # Continuer le jeu après avoir trouvé le trésor
-            continue  # Reprend la boucle du jeu, sans finir
+            continue
         
+        # Check if all treasures are found
         if treasures_found == total_treasures:
-            print("Félicitations ! Vous avez trouvé tous les trésors !")
+            print("Congratulations! You found all treasures!")
             treasure = None
-            continue  # Reprend la boucle du jeu, sans finir
+            continue
 
+        # Handle final boss encounter
         elif current_position == BOSS_POSITION:
-            print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
+            print("You found the boss! Prepare for battle.")
             if combat(joueur, boss, defeated_enemies):
-                print("Vous avez vaincu le boss et gagné le jeu !\n")
+                print("You defeated the boss and won the game!\n")
                 time.sleep(2)
                 clear_terminal()
                 game()
                 break
             else:
-                print("Vous avez perdu contre le boss. Fin de la partie.\n")
+                print("You lost against the boss. Game over.\n")
                 time.sleep(2)
                 clear_terminal()
                 game()
                 break
 
-        # Vérifier les vies restantes
         if joueur.health <= 0:
-            print("Game over ! Vous n'avez plus de vies.\n")
+            print("Game over! You have no health left.\n")
             break
 
 
-
+# Function to describe the player's current location
 def describe_location():
     descriptions = [
-        "Vous êtes dans une forêt sombre.",
-        "Vous arrivez près d'une rivière bruyante.",
-        "Vous êtes dans une clairière ensoleillée.",
-        "Vous entrez dans une grotte humide et sombre."
+        "You are in a dark forest.",
+        "You arrive near a noisy river.",
+        "You are in a sunny clearing.",
+        "You enter a damp, dark cave."
     ]
     print(random.choice(descriptions))
 
+# Update the player's position based on input
 def update_position(move, current_position, player, enemies, treasures_found, defeated_enemies):
     x, y = current_position
     
-    # Si le joueur veut quitter la partie
+    # Handle player exit
     if move == "exit":
-        confirm_exit = input("Voulez-vous quitter la partie ? (oui/non): ")
-        if confirm_exit.lower() == "oui":
-            save_game = input("Voulez-vous sauvegarder la partie avant de quitter ? (oui/non): ")
-            if save_game.lower() == "oui":
+        confirm_exit = input("Do you want to quit the game? (yes/no): ")
+        if confirm_exit.lower() == "yes":
+            save_game = input("Do you want to save before quitting? (yes/no): ")
+            if save_game.lower() == "yes":
                 save_name = generate_save_name()
                 save.save_game(player, enemies, current_position, treasures_found, defeated_enemies, save_name)
-                print("Partie sauvegardée. Au revoir!")
+                print("Game saved. Goodbye!")
             else:
-                print("Vous quittez sans sauvegarder. Au revoir!")
-            exit()  # Quitter le programme
+                print("Exiting without saving. Goodbye!")
+            exit()
 
-    # Déplacement normal
+    # Normal movement handling
     if move in ["z", "go north"]:
         if y < 10: 
             return (x, y + 1)
@@ -210,58 +207,56 @@ def update_position(move, current_position, player, enemies, treasures_found, de
         if x < 10: 
             return (x + 1, y)
     else:
-        print("Mouvement invalide.")
+        print("Invalid move.")
     
     return current_position
 
+# Combat function for handling player and enemy actions
 def combat(player, enemy, defeated_enemies):
     while enemy.is_alive() and player.health > 0:
-        print(f"\n*** Combat contre {enemy.name} (Niveau {enemy.level}) ***")
-        print(f"{player.name}: {player.health}/{player.max_health} HP, {player.defense} de bouclier.")
-        print(f"{enemy.name}: {enemy.health}/{enemy.max_health} HP, {enemy.defense} de bouclier.\n")
+        print(f"\n*** Battle with {enemy.name} (Level {enemy.level}) ***")
+        print(f"{player.name}: {player.health}/{player.max_health} HP, {player.defense} shield.")
+        print(f"{enemy.name}: {enemy.health}/{enemy.max_health} HP, {enemy.defense} shield.\n")
 
-        # Tour du joueur
-        print("\nC'est votre tour !")
-        action = input("Que voulez-vous faire ? (1: Attaquer, 2: Utiliser un objet):\n ")
+        # Player's turn
+        print("\nYour turn!")
+        action = input("What do you want to do? (1: Attack, 2: Use an item):\n ")
 
         if action == "1":
-            # Le joueur choisit d'attaquer
-            print(f"{player.name} attaque {enemy.name} !")
+            print(f"{player.name} attacks {enemy.name}!")
             player.attack_target(enemy)
         elif action == "2":
-            # Le joueur choisit d'utiliser un objet
-            if not player.inventory:  # Vérifie si l'inventaire est vide
-                print("Inventaire vide, attaque normale effectuée.\n")
-                print(f"{player.name} attaque {enemy.name} par défaut.")
+            # Use item from inventory if available
+            if not player.inventory:
+                print("Inventory empty, performing a normal attack.\n")
                 player.attack_target(enemy)
             else:
                 player.show_inventory()
-                item_name = input("Quel objet voulez-vous utiliser ? : ")
+                item_name = input("Which item do you want to use? : ")
                 player.use_item(item_name, target=enemy)
 
-        # Si l'ennemi est mort après l'attaque ou l'utilisation de l'objet, le combat s'arrête ici
         if not enemy.is_alive():
-            print(f"{enemy.name} est vaincu !")
+            print(f"{enemy.name} has been defeated!")
             defeated_enemies.append(enemy.name)
-            enemy.defeat()  # Marque l'ennemi comme vaincu
-            exp_gained = enemy.level  # Suppose que le niveau de l'ennemi détermine les points d'expérience
-            player.gain_experience(exp_gained)  # Utilise la méthode gain_experience pour gérer le level-up
-            print(f"Vous avez récupéré {exp_gained} points d'expérience pour avoir vaincu {enemy.name} !\n")
+            enemy.defeat()
+            exp_gained = enemy.level
+            player.gain_experience(exp_gained)
+            print(f"You gained {exp_gained} experience points for defeating {enemy.name}!\n")
 
             loot = enemy.generate_loot()
             for item in loot:
-                print(f"{enemy.name} laisse tomber {item.name} ({item.rarity}).")
+                print(f"{enemy.name} drops {item.name} ({item.rarity}).")
                 player.pickup_item(item)
-            input("Appuyez sur Entrée pour continuer...")
-            return True  # Le joueur a gagné
+            input("Press Enter to continue...")
+            return True
 
-        # Tour de l'ennemi
-        print(f"\nC'est au tour de {enemy.name} d'attaquer !")
-        enemy.attack_player(player)  # L'ennemi attaque le joueur
+        # Enemy's turn to attack
+        print(f"\n{enemy.name}'s turn to attack!")
+        enemy.attack_player(player)
 
-        # Vérifier si le joueur est toujours en vie
+        # Check if player is still alive
         if player.health <= 0:
-            print(f"{player.name} a été vaincu par {enemy.name}.")
+            print(f"{player.name} was defeated by {enemy.name}.")
             return False 
 
     return player.health > 0
