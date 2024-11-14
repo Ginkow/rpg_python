@@ -8,6 +8,7 @@ import startgameload
 from datetime import datetime
 from launch import game
 import tresors
+import time
 
 # Positions fixes pour le boss et les objets
 BOSS_POSITION = (5, 5)
@@ -43,8 +44,8 @@ def start_game():
     
     name = input("Entrez votre nom pour commencer le jeu: ")
     # Initialisation du joueur
-    joueur = player.Player(name, 10, 100, 100, 20, 100, [], "épée", 100, 200)
-    boss = ennemy.Enemy("Dragon", 2000, 2500, 30, 500, BOSS_POSITION, 430)
+    joueur = player.Player(name, 1, 100, 100, 20, 100, [], "épée", 0, 20)
+    boss = ennemy.Enemy("Dragon", 1000, 1000, 30, 250, BOSS_POSITION, 430)
     
     print(f"Bienvenue, {joueur.name}!")
     print(f"Vous avez {joueur.health} HP et votre objectif est de trouver tous les trésors tout en évitant les obstacles, les monstres, et le boss final.")
@@ -62,16 +63,20 @@ def start_game():
 
     while joueur.health > 0:
         clear_terminal()
-        print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}, Boucliers restants: {joueur.defense}")
+        
+        if joueur.level_up_message:
+            print(joueur.level_up_message)
+            joueur.level_up_message = ""
+            
+        print(f"Position actuelle: {current_position}, Trésors trouvés: {treasures_found}, Vies restantes: {joueur.health}, Boucliers restants: {joueur.defense}, Level: {joueur.level}")
         
         active_enemies = [enemy for enemy in ennemy.enemies if enemy.name not in defeated_enemies]
-        #Afficher position ennemies
+        # #Afficher position ennemies
         for enemy in active_enemies:
             print(f"Position de {enemy.name} : {enemy.position}")
             
         if tresors.TREASURE_POSITION is not None:
             print(f"Position du coffre: {tresors.TREASURE_POSITION}")
-
         
         # Afficher l'inventaire si demandé
         if inventory_displayed:
@@ -106,6 +111,8 @@ def start_game():
 
                 if joueur.health <= 0:
                     print("Vous êtes mort. Fin de la partie.")
+                    time.sleep(2)
+                    clear_terminal()
                     return
 
         if current_position == treasure:
@@ -146,10 +153,14 @@ def start_game():
             print("Vous avez trouvé le boss ! Préparez-vous à combattre.")
             if combat(joueur, boss, defeated_enemies):
                 print("Vous avez vaincu le boss et gagné le jeu !\n")
+                time.sleep(2)
+                clear_terminal()
                 game()
                 break
             else:
                 print("Vous avez perdu contre le boss. Fin de la partie.\n")
+                time.sleep(2)
+                clear_terminal()
                 game()
                 break
 
@@ -233,7 +244,10 @@ def combat(player, enemy, defeated_enemies):
             print(f"{enemy.name} est vaincu !")
             defeated_enemies.append(enemy.name)
             enemy.defeat()  # Marque l'ennemi comme vaincu
-            player.experience += 10
+            exp_gained = enemy.level  # Suppose que le niveau de l'ennemi détermine les points d'expérience
+            player.gain_experience(exp_gained)  # Utilise la méthode gain_experience pour gérer le level-up
+            print(f"Vous avez récupéré {exp_gained} points d'expérience pour avoir vaincu {enemy.name} !\n")
+
             loot = enemy.generate_loot()
             for item in loot:
                 print(f"{enemy.name} laisse tomber {item.name} ({item.rarity}).")

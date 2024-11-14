@@ -6,7 +6,7 @@ class Player:
         self.level = level
         self.health = health
         self.max_health = max_health
-        self.attack = 20
+        self.attack = attack
         self.defense = defense
         self.inventory = inventory
         self.weapon = weapon
@@ -15,10 +15,38 @@ class Player:
         self.damage_boost = 0
         self.boost_turns = 0
         self.position = position
+        self.level_up_message = ""
     
     def is_alive(self):
         """Vérifie si le joueur est encore en vie."""
         return self.health > 0
+    
+    def gain_experience(self, amount):
+        """Gagne de l'expérience et passe de niveau si le seuil est atteint."""
+        self.experience += amount
+        print(f"{self.name} gagne {amount} points d'expérience.")
+
+        # Boucle pour gérer plusieurs montées de niveau en cas de gros gains d'expérience
+        while self.experience >= self.experience_to_next_level:
+            # Passer au niveau suivant
+            self.experience -= self.experience_to_next_level
+            self.level += 1
+
+            # Augmenter la santé et l'attaque selon le niveau
+            self.max_health += 10 * self.level # Santé maximale augmentée de 10 par niveau
+            self.attack += 2 * self.level  # Attaque augmentée de 2 par niveau
+
+            # Restaurer santé et bouclier au maximum
+            self.health = self.max_health  # Santé actuelle rétablie au maximum
+            self.defense = 100  # Bouclier rétabli au maximum
+
+            # Augmenter l'expérience nécessaire pour le prochain niveau
+            self.experience_to_next_level += 10
+
+            # Message de montée de niveau
+            self.level_up_message = f"Félicitations ! Vous êtes maintenant niveau {self.level} !"
+            print(f"Santé maximale augmentée à {self.max_health}, attaque augmentée à {self.attack}.")
+            print(f"Votre santé et bouclier sont restaurés : {self.health} HP et {self.defense} de bouclier.\n")
 
 
     def attack_target(self, target):
