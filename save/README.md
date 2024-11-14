@@ -1,1 +1,1 @@
-Vous trouverais dans ce dossier toutes les sauvegardes que vous avez pu faire durant le jeu
+You will find in this folder all the saves you have made during the game.
